@@ -2,12 +2,6 @@ import os
 import json
 from core.settings import error_type
 
-def get_data_from_json():
-    with open('data.json') as f:
-        data = json.load(f)
-        data_JSON = data
-        print(data_JSON)
-
 class ValidJson:
 
     def __init__(self,data_JSON):
@@ -48,7 +42,6 @@ class ValidJson:
 
         def valid_dirs_url():
             for dir in self.data['dirs']:
-                dir_error=False
                 try:
                     dir['dir']
                 except KeyError:
@@ -58,8 +51,6 @@ class ValidJson:
                         exit('Validate data.JSON file ... missing index dir ' + str(dir) + ' !')
                 else:
                     dir_error = os.path.isdir(dir['dir'])
-
-
                     if dir_error is False:
                         if error_type:
                             raise IsADirectoryError('Validate data.JSON file ... Dir for ' + dir['type'] + ' is Invilid or is Crypted !')

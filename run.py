@@ -1,6 +1,6 @@
 import json
 from json import JSONDecodeError
-from core.init import ValidJson,get_data_from_json,LoopRun
+from core.init import ValidJson,LoopRun
 from core.dir import ScanDirs
 from core.settings import setings_array
 from pathlib import Path
@@ -21,7 +21,7 @@ else:
 
 moduls = [
     {
-        "obj": ScanDirs(), "method": 'start',
+        "obj": ScanDirs(data_json_dirs), "method": 'start',
          "stan": setings_array["scan_dir"], "start_mes": 'Scaning Dir ... Start', "end_mees": 'Scaning Dir ... OK'
     },
 ]
