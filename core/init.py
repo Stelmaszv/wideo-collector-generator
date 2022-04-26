@@ -84,6 +84,22 @@ class ValidJson:
         self.check_dirs()
         print('Validate data.JSON file ... OK')
 
+class LoopRun:
+    moduls = []
+
+    def __init__(self,moduls):
+        self.moduls=moduls
+
+    def run_object(self, Obj, method, run, start_string, end_string):
+        if run:
+            print(start_string)
+            method = getattr(Obj, method)
+            method()
+            print(end_string)
+
+    def loop(self):
+        for object in self.moduls:
+            self.run_object(object['obj'], object['method'], object['stan'], object['start_mes'], object['end_mees'])
 
 
 
