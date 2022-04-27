@@ -1,6 +1,14 @@
 import os
+import json
+import ast
 from abc import ABC, abstractmethod
 from pathlib import Path
+from core.settings import movie_ext
+
+with open('D:\project\wideo-collector-generator\dist.text') as f:
+    data = f.read()
+    db = ast.literal_eval(data)
+
 
 class ScanDirs:
 
@@ -51,9 +59,17 @@ class AbstractScanElement(ABC):
         self.dir = dir
         self.init_dir()
         self.create_json_config()
+        self.name=self.get_name()
+        self.add_to_db()
+
+    def get_name(self):
+        return  self.dir.split('\\')[4]
 
     @abstractmethod
     def scan(self):
+        pass
+
+    def add_to_db(self):
         pass
 
     def create_json_config(self):
@@ -72,6 +88,7 @@ class ScanSerie(AbstractScanElement):
 
     scan_dir = 'movies'
     base_dir=['movies','photos\\DATA','banners','stars']
+    db_el=''
 
     def scan(self):
         dir_list = os.listdir(self.dir + '\\' + self.scan_dir);
@@ -80,12 +97,19 @@ class ScanSerie(AbstractScanElement):
             if is_dir:
                 dir_list_el = os.listdir(self.dir + '\\' + self.scan_dir + '\\' + dir+'\\DATA')
                 for el_in_dir in dir_list_el:
-                    print(el_in_dir)
+                    if el_in_dir.endswith(movie_ext):
+                        print(el_in_dir)
+
+
+    def add_to_db(self):
+        db['series'][self.name]={'name':self.name,'movies':{}}
 
 class ScanStar(AbstractScanElement):
 
     def scan(self):
         pass
+
+
 
 class ScanProducent(AbstractScanElement):
 
