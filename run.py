@@ -4,6 +4,7 @@ from core.init import ValidJson,LoopRun
 from core.dir import ScanDirs
 from core.settings import setings_array
 from pathlib import Path
+
 data_json_dirs={}
 print("Validate data.JSON file ... Start")
 if Path('data.json').is_file():

@@ -1,13 +1,15 @@
 import os
 import json
+import pickle
 import ast
 from abc import ABC, abstractmethod
 from pathlib import Path
 from core.settings import movie_ext
 
-with open('D:\project\wideo-collector-generator\dist.text') as f:
+with open('D:\project\wideo-collector-generator\dist.json') as f:
     data = f.read()
     db = ast.literal_eval(data)
+
 
 
 class ScanDirs:
@@ -42,6 +44,11 @@ class AbstractScan(ABC):
                 dir_list_elemnts = os.listdir(self.dir + '\\' + dir)
                 for el in dir_list_elemnts:
                     self.FactoryScan(self.dir + '\\' + dir + '\\' + el).scan()
+
+        os.remove("dist.json")
+        a_file = open("dist.json", "w")
+        json.dump(db, a_file)
+        a_file.close()
 
     def init_dir(self):
         self.base_init_dir()
@@ -98,25 +105,21 @@ class ScanSerie(AbstractScanElement):
                 dir_list_el = os.listdir(self.dir + '\\' + self.scan_dir + '\\' + dir+'\\DATA')
                 for el_in_dir in dir_list_el:
                     if el_in_dir.endswith(movie_ext):
-                        print(el_in_dir)
-
+                        self.db_el['movies'][el_in_dir]=[]
 
     def add_to_db(self):
         db['series'][self.name]={'name':self.name,'movies':{}}
+        self.db_el=db['series'][self.name]
 
 class ScanStar(AbstractScanElement):
 
     def scan(self):
         pass
 
-
-
 class ScanProducent(AbstractScanElement):
 
     def scan(self):
-        dir_list = os.listdir(self.dir+'\\'+self.scan_dir);
-        for dir in dir_list:
-            print(dir)
+        pass
 
 class StarsDir(AbstractScan):
     FactoryScan = ScanStar
