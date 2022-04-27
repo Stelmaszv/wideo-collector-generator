@@ -1,12 +1,13 @@
 import json
 from json import JSONDecodeError
-from core.init import ValidJson,LoopRun
-from core.dir import ScanDirs
+from core.init import ValidJson,LoopRun,CreateDist
 from core.settings import setings_array
 from pathlib import Path
-
+CreateDist()
+from core.dir import ScanDirs
 data_json_dirs={}
 print("Validate data.JSON file ... Start")
+
 if Path('data.json').is_file():
     try:
         with open('data.json') as f:

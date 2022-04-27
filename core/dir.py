@@ -10,8 +10,6 @@ with open('D:\project\wideo-collector-generator\dist.json') as f:
     data = f.read()
     db = ast.literal_eval(data)
 
-
-
 class ScanDirs:
 
     def __init__(self,dir):

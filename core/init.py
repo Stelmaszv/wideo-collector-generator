@@ -1,5 +1,6 @@
 import os
 import json
+from os.path import exists
 from core.settings import error_type
 
 class ValidJson:
@@ -91,6 +92,13 @@ class LoopRun:
     def loop(self):
         for object in self.moduls:
             self.run_object(object['obj'], object['method'], object['stan'], object['start_mes'], object['end_mees'])
+
+class CreateDist():
+    def __init__(self):
+        if exists('dist.json') is False:
+            f = open('dist.json', "x")
+            f.write("{'series': {}}")
+            f.close()
 
 
 
