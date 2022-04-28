@@ -81,6 +81,11 @@ class AbstractScan(ABC):
 
 class BasseScan:
 
+    def base_init(self,name,dir):
+        self.name = name
+        print('Adding ... ' + self.name + '')
+        self.dir = dir + '\\' + self.name
+
     def create_json_config(self):
         if Path(self.dir + '\\config.json').is_file() is False:
             f = open(self.dir + '\\config.json', "x")
@@ -117,14 +122,37 @@ class BasseScan:
             return nstr
         return str
 
+    def set_dir(self, name,star_dir):
+        letter_of_movie = name[0]
+        letter = letter_of_movie.upper()
+        from run import data_json_dirs
+        star_dir=data_json_dirs[star_dir]
+        dir = ''
+        if letter == 'A' or letter == 'B' or letter == 'C' or letter == 'D':
+            dir = star_dir + '\\A-D\\' + name
+        if letter == 'E' or letter == 'F' or letter == 'G' or letter == 'H':
+            dir = star_dir + '\\E-H\\' + name
+        if letter == 'I' or letter == 'J' or letter == 'K' or letter == 'L':
+            dir = star_dir + '\\I-L\\' + name
+        if letter == 'M' or letter == 'N' or letter == 'O' or letter == 'P' or letter == 'Q':
+            dir = star_dir + '\\M-P\\' + name
+        if letter == 'R' or letter == 'S' or letter == 'T' or letter == 'U':
+            dir = star_dir + '\\R-U\\' + name
+        if letter == 'W' or letter == 'V' or letter == 'X' or letter == 'Y' or letter == 'Z':
+            dir = star_dir + '\\W-Z\\' + name
+        return dir
+
+    def init_dir(self):
+        for dir in self.base_dir:
+            if os.path.isdir(self.dir + '\\' + dir) is False:
+                os.makedirs(self.dir + '\\' + dir)
+
 class AbstractAddElment(ABC,BasseScan):
 
     shema_url = 'json_schema/movies.JSON'
 
-    def __init__(self,name,dir):
-        self.name=name
-        print('Adding ... ' + self.name + '')
-        self.dir = dir + '\\' + self.name
+    def __init__(self,name,dir=''):
+        self.base_init(name,dir)
         self.create_dir()
 
     def create_dir(self):
@@ -137,6 +165,25 @@ class AbstractAddElment(ABC,BasseScan):
     def add(self):
         pass
 
+class StarElment(AbstractAddElment):
+
+    base_dir = ['movies', 'photos\\DATA']
+    shema_url = 'json_schema/star.JSON'
+
+    def __init__(self, name, dir=''):
+        self.base_init(name,dir)
+        self.create_dir()
+        self.create_json_config()
+        self.init_dir()
+
+    def create_dir(self):
+        self.dir=self.set_dir(self.name,'stars')
+        if os.path.isdir(self.dir) is False:
+            os.makedirs(self.dir)
+
+    def add(self):
+        pass
+
 class MovieElment(AbstractAddElment):
 
     validValue = "[a-zA-Z0-9]+\s+\([a-zA-Z0-9\s]+\)";
@@ -145,6 +192,12 @@ class MovieElment(AbstractAddElment):
         stars = self.faind_stars(db['movies'][self.name]['full_name'])
         stars_dist = {"star_name" : star for star in stars}
         db['movies'][self.name]['stars'] = stars_dist
+        self.add_stars_in_movie_to_db(stars)
+
+    def add_stars_in_movie_to_db(self,stars):
+        for star in stars:
+            db['stars'][star]={'name':star}
+            StarElment(star,'dqwd').add()
 
     def faind_stars(self, file):
         FS = FaindStar(file)
@@ -176,11 +229,6 @@ class AbstractScanElement(ABC,BasseScan):
 
     def add_to_db(self):
         pass
-
-    def init_dir(self):
-        for dir in self.base_dir:
-            if os.path.isdir(self.dir + '\\' + dir) is False:
-                os.makedirs(self.dir + '\\' + dir)
 
 
 class ScanSerie(AbstractScanElement):
@@ -215,6 +263,8 @@ class ScanSerie(AbstractScanElement):
         self.db_el=db['series'][self.name]
 
 class ScanStar(AbstractScanElement):
+
+    base_dir = ['movies', 'photos\\DATA']
 
     def scan(self):
         pass
