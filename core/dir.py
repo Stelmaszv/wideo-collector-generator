@@ -30,6 +30,7 @@ class ScanDirs:
 class AbstractScan(ABC):
     base_dir=['A-D','E-H','I-L','M-P','R-U','W-Z']
     FactoryScan = None
+
     def __init__(self,dir):
         self.dir=dir
         self.base_init_dir()
@@ -59,6 +60,7 @@ class AbstractScan(ABC):
 class AbstractScanElement(ABC):
 
     scan_dir= ''
+    shema_url = ''
 
     def __init__(self,dir):
         self.dir = dir
@@ -80,7 +82,7 @@ class AbstractScanElement(ABC):
     def create_json_config(self):
         if Path(self.dir + '\\config.json').is_file() is False:
             f = open(self.dir + '\\config.json', "x")
-            f.write('{}')
+            f.write(Path(self.shema_url).read_text())
             f.close()
 
     def init_dir(self):
@@ -88,12 +90,12 @@ class AbstractScanElement(ABC):
             if os.path.isdir(self.dir + '\\' + dir) is False:
                 os.makedirs(self.dir + '\\' + dir)
 
-
 class ScanSerie(AbstractScanElement):
 
     scan_dir = 'movies'
     base_dir=['movies','photos\\DATA','banners','stars']
     db_el=''
+    shema_url = 'json_schema/series.JSON'
 
     def scan(self):
         dir_list = os.listdir(self.dir + '\\' + self.scan_dir);
@@ -103,10 +105,10 @@ class ScanSerie(AbstractScanElement):
                 dir_list_el = os.listdir(self.dir + '\\' + self.scan_dir + '\\' + dir+'\\DATA')
                 for el_in_dir in dir_list_el:
                     if el_in_dir.endswith(movie_ext):
-                        self.db_el['movies'][el_in_dir]=[]
+                        db['movies'][el_in_dir]={'series':self.name}
 
     def add_to_db(self):
-        db['series'][self.name]={'name':self.name,'movies':{}}
+        db['series'][self.name]={'name':self.name}
         self.db_el=db['series'][self.name]
 
 class ScanStar(AbstractScanElement):

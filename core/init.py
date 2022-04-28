@@ -2,6 +2,7 @@ import os
 import json
 from os.path import exists
 from core.settings import error_type
+from pathlib import Path
 
 class ValidJson:
 
@@ -94,10 +95,12 @@ class LoopRun:
             self.run_object(object['obj'], object['method'], object['stan'], object['start_mes'], object['end_mees'])
 
 class CreateDist():
+    shema_url = 'json_schema/dist.JSON'
     def __init__(self):
         if exists('dist.json') is False:
             f = open('dist.json', "x")
-            f.write("{'series': {}}")
+            #f.write("{'series': {} , 'movies':{}}")
+            f.write(Path(self.shema_url).read_text())
             f.close()
 
 
