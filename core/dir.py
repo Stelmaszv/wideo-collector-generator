@@ -87,6 +87,11 @@ class BasseScan:
             f.write(Path(self.shema_url).read_text())
             f.close()
 
+    def convert(self,a):
+        it = iter(a)
+        res_dct = dict(zip(it, it))
+        return res_dct
+
     def clear_name(self,name):
         str = ''
         stop = False
@@ -137,7 +142,9 @@ class MovieElment(AbstractAddElment):
     validValue = "[a-zA-Z0-9]+\s+\([a-zA-Z0-9\s]+\)";
 
     def add(self):
-        self.stars = self.faind_stars(self.name)
+        stars = self.faind_stars(db['movies'][self.name]['full_name'])
+        stars_dist = {"star_name" : star for star in stars}
+        db['movies'][self.name]['stars'] = stars_dist
 
     def faind_stars(self, file):
         FS = FaindStar(file)
@@ -145,7 +152,6 @@ class MovieElment(AbstractAddElment):
             string = FS.return_stars_in_string()
             return FS.create_star_list()
         return None
-
 
 class AbstractScanElement(ABC,BasseScan):
 
@@ -196,7 +202,9 @@ class ScanSerie(AbstractScanElement):
                         new_movie_dir=movie_dir.replace("series", "movies")
                         db['movies'][self.clear_name(el_in_dir)]={
                             'name':self.clear_name(el_in_dir),
+                            'full_name':el_in_dir,
                             'dir':new_movie_dir,
+                            'series':self.name,
                             'src':self.dir + '\\' + self.scan_dir + '\\' + dir+'\\DATA\\'+el_in_dir
                         }
                         MovieElment(self.clear_name(el_in_dir),new_movie_dir).add()
