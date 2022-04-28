@@ -59,9 +59,17 @@ class AbstractScan(ABC):
 
 class AbstractAddElment(ABC):
 
-    def __init__(self,name):
+    def __init__(self,name,dir):
         self.name=name
         print('Adding ... ' + self.name + '')
+        if os.path.isdir(dir+'\\'+ self.name) is False:
+            os.makedirs(dir+'\\'+ self.name)
+        db['movies'][self.name]['dir']=dir+'\\'+ self.name
+        self.create_dir()
+
+    @abstractmethod
+    def create_dir(self):
+        pass
 
     @abstractmethod
     def add(self):
@@ -71,6 +79,9 @@ class MovieElment(AbstractAddElment):
 
     def add(self):
         pass
+
+    def create_dir(self):
+        print('pl')
 
 class AbstractScanElement(ABC):
 
@@ -122,12 +133,14 @@ class ScanSerie(AbstractScanElement):
                 dir_list_el = os.listdir(self.dir + '\\' + self.scan_dir + '\\' + dir+'\\DATA')
                 for el_in_dir in dir_list_el:
                     if el_in_dir.endswith(movie_ext):
-                        db['movies'][el_in_dir]={'series':self.name}
-                        MovieElment(el_in_dir).add()
+                        movie_dir=self.dir+'\\'+dir
+                        new_movie_dir=movie_dir.replace("series", "movies")
+                        db['movies'][el_in_dir]={'name':el_in_dir,'dir':new_movie_dir}
+                        MovieElment(el_in_dir,new_movie_dir).add()
 
 
     def add_to_db(self):
-        db['series'][self.name]={'name':self.name}
+        db['series'][self.name]={'name':self.name,'dir':self.dir}
         self.db_el=db['series'][self.name]
 
 class ScanStar(AbstractScanElement):
