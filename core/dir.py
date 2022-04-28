@@ -2,6 +2,7 @@ import os
 import json
 import pickle
 import ast
+import re
 from abc import ABC, abstractmethod
 from pathlib import Path
 from core.settings import movie_ext
@@ -9,6 +10,27 @@ from core.settings import movie_ext
 with open('D:\project\wideo-collector-generator\dist.json') as f:
     data = f.read()
     db = ast.literal_eval(data)
+
+class FaindStar:
+
+    str = ''
+    starArray=[]
+
+    def __init__(self,dir):
+        self.dir=dir
+        self.start = self.dir.find("(")
+        self.end = self.dir.find(")")
+
+    def return_stars_in_string(self):
+        str=''
+        for i in range(self.start+1,self.end):
+            str=str+self.dir[i]
+        return str
+
+    def create_star_list(self):
+        str=self.return_stars_in_string()
+        self.starArray = str.split(' and ')
+        return self.starArray
 
 class ScanDirs:
 
@@ -65,6 +87,31 @@ class BasseScan:
             f.write(Path(self.shema_url).read_text())
             f.close()
 
+    def clear_name(self,name):
+        str = ''
+        stop = False
+        for i in range(0, len(name)):
+
+            if name[i] == "[":
+                stop = True
+
+            if name[i] == "(":
+                stop = True
+
+            if name[i] == ".":
+                stop = True
+
+            if stop is False:
+                str = str + name[i]
+
+        if str[len(str) - 1] == ' ':
+            nstr = ''
+            for i in range(0, len(str) - 1):
+                if i < len(str) - 1:
+                    nstr = nstr + str[i]
+            return nstr
+        return str
+
 class AbstractAddElment(ABC,BasseScan):
 
     shema_url = 'json_schema/movies.JSON'
@@ -87,8 +134,18 @@ class AbstractAddElment(ABC,BasseScan):
 
 class MovieElment(AbstractAddElment):
 
+    validValue = "[a-zA-Z0-9]+\s+\([a-zA-Z0-9\s]+\)";
+
     def add(self):
-        pass
+        self.stars = self.faind_stars(self.name)
+
+    def faind_stars(self, file):
+        FS = FaindStar(file)
+        if re.search(self.validValue, file):
+            string = FS.return_stars_in_string()
+            return FS.create_star_list()
+        return None
+
 
 class AbstractScanElement(ABC,BasseScan):
 
@@ -119,6 +176,7 @@ class AbstractScanElement(ABC,BasseScan):
             if os.path.isdir(self.dir + '\\' + dir) is False:
                 os.makedirs(self.dir + '\\' + dir)
 
+
 class ScanSerie(AbstractScanElement):
 
     scan_dir = 'movies'
@@ -136,8 +194,12 @@ class ScanSerie(AbstractScanElement):
                     if el_in_dir.endswith(movie_ext):
                         movie_dir=self.dir+'\\'+dir
                         new_movie_dir=movie_dir.replace("series", "movies")
-                        db['movies'][el_in_dir]={'name':el_in_dir,'dir':new_movie_dir}
-                        MovieElment(el_in_dir,new_movie_dir).add()
+                        db['movies'][self.clear_name(el_in_dir)]={
+                            'name':self.clear_name(el_in_dir),
+                            'dir':new_movie_dir,
+                            'src':self.dir + '\\' + self.scan_dir + '\\' + dir+'\\DATA\\'+el_in_dir
+                        }
+                        MovieElment(self.clear_name(el_in_dir),new_movie_dir).add()
 
 
     def add_to_db(self):
