@@ -57,16 +57,33 @@ class AbstractScan(ABC):
             if os.path.isdir(self.dir+'\\'+dir) is False:
                 os.mkdir(self.dir+'\\'+dir)
 
+class AbstractAddElment(ABC):
+
+    def __init__(self,name):
+        self.name=name
+        print('Adding ... ' + self.name + '')
+
+    @abstractmethod
+    def add(self):
+        pass
+
+class MovieElment(AbstractAddElment):
+
+    def add(self):
+        pass
+
 class AbstractScanElement(ABC):
 
     scan_dir= ''
     shema_url = ''
+    ElmentFactory=MovieElment
 
     def __init__(self,dir):
         self.dir = dir
         self.init_dir()
         self.create_json_config()
         self.name=self.get_name()
+        print('Scaning Dir ... Dir ' + self.name + '')
         self.add_to_db()
 
     def get_name(self):
@@ -106,6 +123,8 @@ class ScanSerie(AbstractScanElement):
                 for el_in_dir in dir_list_el:
                     if el_in_dir.endswith(movie_ext):
                         db['movies'][el_in_dir]={'series':self.name}
+                        MovieElment(el_in_dir).add()
+
 
     def add_to_db(self):
         db['series'][self.name]={'name':self.name}
