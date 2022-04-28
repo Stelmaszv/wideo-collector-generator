@@ -57,19 +57,29 @@ class AbstractScan(ABC):
             if os.path.isdir(self.dir+'\\'+dir) is False:
                 os.mkdir(self.dir+'\\'+dir)
 
-class AbstractAddElment(ABC):
+class BasseScan:
+
+    def create_json_config(self):
+        if Path(self.dir + '\\config.json').is_file() is False:
+            f = open(self.dir + '\\config.json', "x")
+            f.write(Path(self.shema_url).read_text())
+            f.close()
+
+class AbstractAddElment(ABC,BasseScan):
+
+    shema_url = 'json_schema/movies.JSON'
 
     def __init__(self,name,dir):
         self.name=name
         print('Adding ... ' + self.name + '')
-        if os.path.isdir(dir+'\\'+ self.name) is False:
-            os.makedirs(dir+'\\'+ self.name)
-        db['movies'][self.name]['dir']=dir+'\\'+ self.name
+        self.dir = dir + '\\' + self.name
         self.create_dir()
 
-    @abstractmethod
     def create_dir(self):
-        pass
+        if os.path.isdir(self.dir) is False:
+            os.makedirs(self.dir)
+        db['movies'][self.name]['dir'] = self.dir
+        self.create_json_config()
 
     @abstractmethod
     def add(self):
@@ -80,10 +90,7 @@ class MovieElment(AbstractAddElment):
     def add(self):
         pass
 
-    def create_dir(self):
-        print('pl')
-
-class AbstractScanElement(ABC):
+class AbstractScanElement(ABC,BasseScan):
 
     scan_dir= ''
     shema_url = ''
@@ -106,12 +113,6 @@ class AbstractScanElement(ABC):
 
     def add_to_db(self):
         pass
-
-    def create_json_config(self):
-        if Path(self.dir + '\\config.json').is_file() is False:
-            f = open(self.dir + '\\config.json', "x")
-            f.write(Path(self.shema_url).read_text())
-            f.close()
 
     def init_dir(self):
         for dir in self.base_dir:
