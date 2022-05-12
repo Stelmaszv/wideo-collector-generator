@@ -4,7 +4,7 @@ from core.init import ValidJson,LoopRun,CreateDist
 from core.settings import setings_array
 from pathlib import Path
 CreateDist()
-from core.dir import ScanDirs
+
 data_json_dirs={}
 print("Validate data.JSON file ... Start")
 
@@ -20,6 +20,7 @@ if Path('data.json').is_file():
         exit('Validate data.JSON file ... Invalid File data.JSON file !')
 else:
     exit('Validate data.JSON file ... Please Create File data.JSON !')
+from core.dir import ScanDirs
 
 moduls = [
     {

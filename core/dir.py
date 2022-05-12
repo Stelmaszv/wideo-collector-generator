@@ -2,12 +2,13 @@ import os
 import json
 import pickle
 import ast
+from os.path import exists
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
 from core.settings import movie_ext
 
-with open('D:\project\wideo-collector-generator\dist.json') as f:
+with open('dist.json') as f:
     data = f.read()
     db = ast.literal_eval(data)
 
