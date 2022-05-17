@@ -64,7 +64,6 @@ class AbstractScan(ABC):
                 dir_list_elemnts = os.listdir(self.dir + '\\' + dir)
                 for el in dir_list_elemnts:
                     self.FactoryScan(self.dir + '\\' + dir + '\\' + el).scan()
-
         os.remove("dist.json")
         a_file = open("dist.json", "w")
         json.dump(db, a_file)
@@ -188,10 +187,15 @@ class MovieElment(AbstractAddElment):
 
     validValue = "[a-zA-Z0-9]+\s+\([a-zA-Z0-9\s]+\)";
 
+    def add_stars(self,stars):
+        stars_dist={}
+        for star in stars:
+            stars_dist[star]={"star_name":star}
+        return stars_dist
+
     def add(self):
         stars = self.faind_stars(db['movies'][self.name]['full_name'])
-        stars_dist = {"star_name" : star for star in stars}
-        db['movies'][self.name]['stars'] = stars_dist
+        db['movies'][self.name]['stars'] = self.add_stars(stars)
         self.add_stars_in_movie_to_db(stars)
 
     def add_stars_in_movie_to_db(self,stars):

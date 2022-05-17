@@ -1,12 +1,16 @@
 import ast
 import json
 import os
-from abc import ABC, abstractmethod
+from abc import ABC
+from pathlib import Path
 with open('dist.json') as f:
     data = f.read()
     db = ast.literal_eval(data)
 
 class ConfigModule:
+
+    def __int__(self):
+        print('init')
 
     def start(self):
         config_dirs= {
@@ -15,11 +19,8 @@ class ConfigModule:
             "stars": ConfigStarDir,
             "producents":ConfigProducentsDir
         }
-
         for dir in db:
             config_dirs[dir](dir).start_config()
-
-        os.remove("dist.json")
         a_file = open("dist.json", "w")
         json.dump(db, a_file)
         a_file.close()
@@ -41,13 +42,22 @@ class AbstractDirConfig(ABC):
 class AbstractConfig(ABC):
 
     forbiten_fields=['name','dir','config']
+    fields = []
+    photo_dir = 'photos'
 
     def __init__(self,index,element):
         self.index=index
         self.element = element
 
-    def on_config(self):
-        pass
+    def get_img(self,name):
+        photo_list=db[self.index][self.element]['dir']+'\\'+self.photo_dir
+        for photo in os.listdir(photo_list):
+            if name==Path(photo).stem:
+                return db[self.index][self.element]['dir']+'\\'+self.photo_dir+'\\'+photo
+        return ''
+
+    def on_config(self,data,index)->data:
+        return data
 
     def config(self):
 
@@ -55,30 +65,53 @@ class AbstractConfig(ABC):
 
         with open(db[self.index][self.element]['dir']+'/config.JSON') as f:
             data = json.load(f)
-            self.on_config(data,db[self.index][self.element])
+            data = self.on_config(data,db[self.index][self.element])
             for el in data:
-                if el not in self.forbiten_fields:
+                if el not in self.forbiten_fields and el in self.fields:
                     db[self.index][self.element][el]=data[el]
+                else:
+                    print('Warning ! Field '+el+' is invalid for '+self.index)
 
 class ConfigStar(AbstractConfig):
 
-    def on_config(self,data,index):
-        pass
+    fields     = ['show_name','avatar']
+
+    def on_config(self,data,index)->data:
+        data['avatar'] = self.get_img('avatar')
+        return data
 
 class ConfigSeries(AbstractConfig):
 
+    fields = ['show_name']
+
     def on_config(self, data, index):
-        pass
+        return data
 
 class ConfigProducents(AbstractConfig):
 
+    fields = ['show_name']
+
     def on_config(self, data, index):
-        pass
+
+        return data
 
 class ConfigMovies(AbstractConfig):
 
+    fields = ['show_name','poster','cover','stars']
+    photo_dir = ''
+
+    def add_stars(self,nstars,stars):
+        stars_dist={}
+        for star in nstars:
+            stars_dist[star]={"star_name":star}
+        stars_dist.update(stars)
+        return stars_dist
+
     def on_config(self, data, index):
-        pass
+        data['poster'] = self.get_img('poster')
+        data['cover']  = self.get_img('cover')
+        data['stars']  = self.add_stars(data['stars'],index['stars'])
+        return data
 
 class ConfigStarDir(AbstractDirConfig):
     FactoryConfig = ConfigStar
