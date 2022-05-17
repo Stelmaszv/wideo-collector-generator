@@ -230,7 +230,6 @@ class AbstractScanElement(ABC,BasseScan):
     def add_to_db(self):
         pass
 
-
 class ScanSerie(AbstractScanElement):
 
     scan_dir = 'movies'

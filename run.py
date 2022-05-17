@@ -21,12 +21,19 @@ if Path('data.json').is_file():
 else:
     exit('Validate data.JSON file ... Please Create File data.JSON !')
 from core.dir import ScanDirs
+from core.config import ConfigModule
 
 moduls = [
     {
         "obj": ScanDirs(data_json_dirs), "method": 'start',
-         "stan": setings_array["scan_dir"], "start_mes": 'Scaning Dir ... Start', "end_mees": 'Scaning Dir ... OK'
+        "stan": setings_array["scan_dir"], "start_mes": 'Scaning Dir ... Start', "end_mees": 'Scaning Dir ... OK',
     },
+    {
+        "obj": ConfigModule(), "method": 'start',
+        "stan": setings_array["scan_dir"], "start_mes": 'Config Dir ... Start', "end_mees": 'Config Dir ... OK',
+    }
+
+
 ]
 
 LR=LoopRun(moduls)
