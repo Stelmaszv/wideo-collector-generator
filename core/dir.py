@@ -195,7 +195,7 @@ class MovieElment(AbstractAddElment):
 
     def add_stars_in_movie_to_db(self,stars):
         for star in stars:
-            db['stars'][star]={'name':star}
+            db['stars'][star]={'name':star,'config':str(False)}
             StarElment(star).add()
 
     def faind_stars(self, file):
@@ -252,13 +252,14 @@ class ScanSerie(AbstractScanElement):
                             'full_name':el_in_dir,
                             'dir':new_movie_dir,
                             'series':self.name,
-                            'src':self.dir + '\\' + self.scan_dir + '\\' + dir+'\\'+el_in_dir
+                            'src':self.dir + '\\' + self.scan_dir + '\\' + dir+'\\'+el_in_dir,
+                            'config':str(False)
                         }
                         MovieElment(self.clear_name(el_in_dir),new_movie_dir).add()
 
 
     def add_to_db(self):
-        db['series'][self.name]={'name':self.name,'dir':self.dir}
+        db['series'][self.name]={'name':self.name,'dir':self.dir,'config':str(False)}
         self.db_el=db['series'][self.name]
 
 class ScanStar(AbstractScanElement):
@@ -278,6 +279,7 @@ class ScanProducent(AbstractScanElement):
         db['producents'][self.name]={
             'name': self.name,
             'dir': self.dir,
+            'config': str(False)
         }
 
 class StarsDir(AbstractScan):
