@@ -3,6 +3,9 @@ import json
 import os
 from abc import ABC
 from pathlib import Path
+
+from core.dir import StarElment
+
 with open('dist.json') as f:
     data = f.read()
     db = ast.literal_eval(data)
@@ -104,6 +107,7 @@ class ConfigMovies(AbstractConfig):
         stars_dist={}
         for star in nstars:
             stars_dist[star]={"star_name":star}
+            StarElment(star).add()
         stars_dist.update(stars)
         return stars_dist
 
