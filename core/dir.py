@@ -220,7 +220,8 @@ class AbstractScanElement(ABC,BasseScan):
         self.add_to_db()
 
     def get_name(self):
-        return  self.dir.split('\\')[4]
+        dir=self.dir.split('\\')
+        return  dir[len(dir)-1]
 
     @abstractmethod
     def scan(self):
@@ -275,7 +276,10 @@ class ScanProducent(AbstractScanElement):
     shema_url = 'json_schema/producent.JSON'
 
     def scan(self):
-        pass
+        db['producents'][self.name]={
+            'name': self.name,
+            'dir': self.dir,
+        }
 
 class StarsDir(AbstractScan):
     FactoryScan = ScanStar
