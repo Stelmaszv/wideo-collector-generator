@@ -9,7 +9,7 @@ class ConfigModule:
     def start(self):
         config_dirs= {
             "series"  :ConfigSeriesDir,
-            "movies" :ConfigSeriesDir,
+            "movies" :ConfigMoviesDir,
             "stars": ConfigStarDir,
             "producents":ConfigProducentsDir
         }
@@ -19,22 +19,26 @@ class ConfigModule:
 
 class AbstractDirConfig(ABC):
 
-    def __init__(self,index):
-        print(index)
+    config_mess=''
 
-    @abstractmethod
+    def __init__(self,index):
+        self.index=index
+
     def start_config(self):
-        pass
+        print(self.config_mess)
+        for el in db[self.index]:
+            pass
 
 class ConfigStarDir(AbstractDirConfig):
-    def start_config(self):
-        print('ConfigStarDir')
+    config_mess = 'Config Stars ... Start'
 
 class ConfigSeriesDir(AbstractDirConfig):
-    def start_config(self):
-        print('ConfigSeriesDir')
+    config_mess = 'Config Series ... Start'
 
 class ConfigProducentsDir(AbstractDirConfig):
-    def start_config(self):
-        print('ProducentsDir')
+    config_mess = 'Config Producents ... Start'
+
+class ConfigMoviesDir(AbstractDirConfig):
+    config_mess = 'Config Movies ... Start'
+
 
