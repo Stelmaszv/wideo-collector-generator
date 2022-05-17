@@ -1,8 +1,6 @@
 import os
 import json
-import pickle
 import ast
-from os.path import exists
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -168,7 +166,7 @@ class AbstractAddElment(ABC,BasseScan):
 
 class StarElment(AbstractAddElment):
 
-    base_dir = ['movies', 'photos\\DATA']
+    base_dir = ['movies', 'photos']
     shema_url = 'json_schema/star.JSON'
 
     def __init__(self, name, dir=''):
@@ -198,7 +196,7 @@ class MovieElment(AbstractAddElment):
     def add_stars_in_movie_to_db(self,stars):
         for star in stars:
             db['stars'][star]={'name':star}
-            StarElment(star,'dqwd').add()
+            StarElment(star).add()
 
     def faind_stars(self, file):
         FS = FaindStar(file)
@@ -235,7 +233,7 @@ class AbstractScanElement(ABC,BasseScan):
 class ScanSerie(AbstractScanElement):
 
     scan_dir = 'movies'
-    base_dir=['movies','photos\\DATA','banners','stars']
+    base_dir=['movies','photos','banners','stars']
     db_el=''
     shema_url = 'json_schema/series.JSON'
 
@@ -244,7 +242,7 @@ class ScanSerie(AbstractScanElement):
         for dir in dir_list:
             is_dir = os.path.isdir(self.dir + '\\' + self.scan_dir + '\\' + dir)
             if is_dir:
-                dir_list_el = os.listdir(self.dir + '\\' + self.scan_dir + '\\' + dir+'\\DATA')
+                dir_list_el = os.listdir(self.dir + '\\' + self.scan_dir + '\\' + dir+'')
                 for el_in_dir in dir_list_el:
                     if el_in_dir.endswith(movie_ext):
                         movie_dir=self.dir+'\\'+dir
@@ -254,7 +252,7 @@ class ScanSerie(AbstractScanElement):
                             'full_name':el_in_dir,
                             'dir':new_movie_dir,
                             'series':self.name,
-                            'src':self.dir + '\\' + self.scan_dir + '\\' + dir+'\\DATA\\'+el_in_dir
+                            'src':self.dir + '\\' + self.scan_dir + '\\' + dir+'\\'+el_in_dir
                         }
                         MovieElment(self.clear_name(el_in_dir),new_movie_dir).add()
 
@@ -265,12 +263,16 @@ class ScanSerie(AbstractScanElement):
 
 class ScanStar(AbstractScanElement):
 
-    base_dir = ['movies', 'photos\\DATA']
+    base_dir = ['movies', 'photos']
 
     def scan(self):
         pass
 
 class ScanProducent(AbstractScanElement):
+
+    scan_dir = 'movies'
+    base_dir = ['movies', 'photos', 'banners', 'stars']
+    shema_url = 'json_schema/producent.JSON'
 
     def scan(self):
         pass
