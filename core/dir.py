@@ -174,6 +174,7 @@ class StarElment(AbstractAddElment):
         self.create_dir()
         self.create_json_config()
         self.init_dir()
+        db['stars'][name] = {'name': name, 'config': str(False),'dir':self.dir}
 
     def create_dir(self):
         self.dir=self.set_dir(self.name,'stars')
@@ -195,7 +196,6 @@ class MovieElment(AbstractAddElment):
 
     def add_stars_in_movie_to_db(self,stars):
         for star in stars:
-            db['stars'][star]={'name':star,'config':str(False)}
             StarElment(star).add()
 
     def faind_stars(self, file):

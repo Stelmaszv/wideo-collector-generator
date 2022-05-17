@@ -1,4 +1,6 @@
 import ast
+import json
+import os
 from abc import ABC, abstractmethod
 with open('dist.json') as f:
     data = f.read()
@@ -17,6 +19,11 @@ class ConfigModule:
         for dir in db:
             config_dirs[dir](dir).start_config()
 
+        os.remove("dist.json")
+        a_file = open("dist.json", "w")
+        json.dump(db, a_file)
+        a_file.close()
+
 class AbstractDirConfig(ABC):
 
     config_mess=''
@@ -29,32 +36,49 @@ class AbstractDirConfig(ABC):
         print(self.config_mess)
         for el in db[self.index]:
             if db[self.index][el]['config']=='False':
-                self.FactoryConfig(el).config
+                self.FactoryConfig(self.index,el).config()
 
 class AbstractConfig(ABC):
 
-    def __init__(self, index):
-        self.index = index
-        print(self.index)
+    forbiten_fields=['name','dir','config']
+
+    def __init__(self,index,element):
+        self.index=index
+        self.element = element
+
+    def on_config(self):
+        pass
 
     def config(self):
-        print(self.index)
+
+        print('Config ... '+self.element)
+
+        with open(db[self.index][self.element]['dir']+'/config.JSON') as f:
+            data = json.load(f)
+            self.on_config(data,db[self.index][self.element])
+            for el in data:
+                if el not in self.forbiten_fields:
+                    db[self.index][self.element][el]=data[el]
 
 class ConfigStar(AbstractConfig):
 
-    pass
+    def on_config(self,data,index):
+        pass
 
 class ConfigSeries(AbstractConfig):
 
-    pass
+    def on_config(self, data, index):
+        pass
 
 class ConfigProducents(AbstractConfig):
 
-    pass
+    def on_config(self, data, index):
+        pass
 
 class ConfigMovies(AbstractConfig):
 
-    pass
+    def on_config(self, data, index):
+        pass
 
 class ConfigStarDir(AbstractDirConfig):
     FactoryConfig = ConfigStar
