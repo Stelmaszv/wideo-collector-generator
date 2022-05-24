@@ -3,8 +3,8 @@ import json
 import os
 from abc import ABC
 from pathlib import Path
-
-from core.dir import StarElment
+from core.defs import set_dir
+from core.dir import StarElment, ScanSerie
 
 with open('dist.json') as f:
     data = f.read()
@@ -83,8 +83,6 @@ class AbstractConfig(ABC):
         print('Config ... '+self.element)
         with open(db[self.index][self.element]['dir']+'/config.JSON') as f:
             data = json.load(f)
-            if self.if_count_stars:
-                self.count_stars()
             data = self.on_config(data,db[self.index][self.element])
             for el in data:
                 if el not in self.forbiten_fields and el in self.fields:
@@ -107,15 +105,27 @@ class ConfigSeries(AbstractConfig):
     if_count_stars = True
 
     def on_config(self, data, index):
+        self.count_stars()
         return data
 
 class ConfigProducents(AbstractConfig):
 
-    fields = ['show_name']
+    fields = ['show_name','series']
     if_count_stars = True
 
-    def on_config(self, data, index):
+    def add_series(self,series):
+        from run import data_json_dirs
+        series_dist={}
+        for serie in series:
+            series_dist[serie]={"series_name":serie}
+            start = data_json_dirs['series']
+            set_location= set_dir(serie,start)
+            ScanSerie(set_location)
+        return series_dist
 
+    def on_config(self, data, index):
+        if "series" in data:
+            data['series']  = self.add_series(data['series'])
         return data
 
 class ConfigMovies(AbstractConfig):

@@ -121,24 +121,9 @@ class BasseScan:
         return str
 
     def set_dir(self, name,star_dir):
-        letter_of_movie = name[0]
-        letter = letter_of_movie.upper()
+        from core.defs import set_dir
         from run import data_json_dirs
-        star_dir=data_json_dirs[star_dir]
-        dir = ''
-        if letter == 'A' or letter == 'B' or letter == 'C' or letter == 'D':
-            dir = star_dir + '\\A-D\\' + name
-        if letter == 'E' or letter == 'F' or letter == 'G' or letter == 'H':
-            dir = star_dir + '\\E-H\\' + name
-        if letter == 'I' or letter == 'J' or letter == 'K' or letter == 'L':
-            dir = star_dir + '\\I-L\\' + name
-        if letter == 'M' or letter == 'N' or letter == 'O' or letter == 'P' or letter == 'Q':
-            dir = star_dir + '\\M-P\\' + name
-        if letter == 'R' or letter == 'S' or letter == 'T' or letter == 'U':
-            dir = star_dir + '\\R-U\\' + name
-        if letter == 'W' or letter == 'V' or letter == 'X' or letter == 'Y' or letter == 'Z':
-            dir = star_dir + '\\W-Z\\' + name
-        return dir
+        return set_dir(name,data_json_dirs[star_dir])
 
     def init_dir(self):
         for dir in self.base_dir:
