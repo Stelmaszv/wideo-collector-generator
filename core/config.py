@@ -47,6 +47,7 @@ class AbstractConfig(ABC):
     forbiten_fields=['name','dir','config']
     fields = []
     photo_dir = 'photos'
+    if_count_stars=False
 
     def __init__(self,index,element):
         self.index=index
@@ -62,12 +63,17 @@ class AbstractConfig(ABC):
     def on_config(self,data,index)->data:
         return data
 
+    def count_stars(self):
+        print('count_stars')
+
     def config(self):
 
         print('Config ... '+self.element)
 
         with open(db[self.index][self.element]['dir']+'/config.JSON') as f:
             data = json.load(f)
+            if self.if_count_stars:
+                self.count_stars()
             data = self.on_config(data,db[self.index][self.element])
             for el in data:
                 if el not in self.forbiten_fields and el in self.fields:
@@ -78,6 +84,7 @@ class AbstractConfig(ABC):
 class ConfigStar(AbstractConfig):
 
     fields     = ['show_name','avatar']
+    if_count_stars = False
 
     def on_config(self,data,index)->data:
         data['avatar'] = self.get_img('avatar')
@@ -86,6 +93,7 @@ class ConfigStar(AbstractConfig):
 class ConfigSeries(AbstractConfig):
 
     fields = ['show_name']
+    if_count_stars = True
 
     def on_config(self, data, index):
         return data
@@ -93,6 +101,7 @@ class ConfigSeries(AbstractConfig):
 class ConfigProducents(AbstractConfig):
 
     fields = ['show_name']
+    if_count_stars = True
 
     def on_config(self, data, index):
 
