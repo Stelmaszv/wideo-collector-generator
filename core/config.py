@@ -20,10 +20,11 @@ class ConfigModule:
             "series"  :ConfigSeriesDir,
             "movies" :ConfigMoviesDir,
             "stars": ConfigStarDir,
-            "producents":ConfigProducentsDir
+            "producents":ConfigProducentsDir,
         }
         for dir in db:
-            config_dirs[dir](dir).start_config()
+            if dir != "tags":
+                config_dirs[dir](dir).start_config()
         a_file = open("dist.json", "w")
         json.dump(db, a_file)
         a_file.close()
@@ -78,6 +79,21 @@ class AbstractConfig(ABC):
                         dir_location=db[self.index][self.element]['dir']+'\\stars\\'+star
                         if star_cunter[star]['counter'] >= 3 and os.path.isdir(dir_location) is False:
                             os.mkdir(dir_location)
+    def add_tags(self,tags):
+        def valid_tags(tags):
+            valid_tags_return=[]
+            for tag in tags:
+                tag = tag.capitalize()
+                valid_tags_return.append(tag)
+            return valid_tags_return
+
+        tags_valid=valid_tags(tags)
+        tag_dist = {}
+        for tag in tags_valid:
+            tag_dist[tag] = {"tag_name": tag}
+        db['tags'].update(tag_dist)
+        return {'tags':tag_dist}
+
 
     def config(self):
         print('Config ... '+self.element)
@@ -92,16 +108,18 @@ class AbstractConfig(ABC):
 
 class ConfigStar(AbstractConfig):
 
-    fields     = ['show_name','avatar']
+    fields     = ['show_name','avatar','tags']
     if_count_stars = False
 
     def on_config(self,data,index)->data:
         data['avatar'] = self.get_img('avatar')
+        if "tags" in data:
+            data['tags']  = self.add_tags(data['tags'])
         return data
 
 class ConfigSeries(AbstractConfig):
 
-    fields = ['show_name']
+    fields = ['show_name','producent','tags']
     if_count_stars = True
 
     def add_producent(self,producent):
@@ -119,11 +137,14 @@ class ConfigSeries(AbstractConfig):
         if "producent" in data:
             data['producent']  = self.add_producent(data['producent'])
 
+        if "tags" in data:
+            data['tags']  = self.add_tags(data['tags'])
+
         return data
 
 class ConfigProducents(AbstractConfig):
 
-    fields = ['show_name','series']
+    fields = ['show_name','series','tags']
     if_count_stars = True
 
     def add_series(self,series):
@@ -139,11 +160,15 @@ class ConfigProducents(AbstractConfig):
     def on_config(self, data, index):
         if "series" in data:
             data['series']  = self.add_series(data['series'])
+
+        if "tags" in data:
+            data['tags']  = self.add_tags(data['tags'])
         return data
+
 
 class ConfigMovies(AbstractConfig):
 
-    fields = ['show_name','poster','cover','stars']
+    fields = ['show_name','poster','cover','stars','tags']
     photo_dir = ''
 
     def add_stars(self,nstars,stars):
@@ -161,6 +186,8 @@ class ConfigMovies(AbstractConfig):
         if "stars" in data:
             data['stars']  = self.add_stars(data['stars'],index['stars'])
 
+        if "tags" in data:
+            data['tags']  = self.add_tags(data['tags'])
         return data
 
 class ConfigStarDir(AbstractDirConfig):
