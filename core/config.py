@@ -104,8 +104,21 @@ class ConfigSeries(AbstractConfig):
     fields = ['show_name']
     if_count_stars = True
 
+    def add_producent(self,producent):
+        from run import data_json_dirs
+        producent_dist={}
+        producent_dist['producent']={"series_name":producent}
+        start = data_json_dirs['producents']
+        set_location= set_dir(producent,start)
+        ScanSerie(set_location)
+        return producent_dist
+
     def on_config(self, data, index):
         self.count_stars()
+
+        if "producent" in data:
+            data['producent']  = self.add_producent(data['producent'])
+
         return data
 
 class ConfigProducents(AbstractConfig):
