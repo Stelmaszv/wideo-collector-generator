@@ -64,12 +64,23 @@ class AbstractConfig(ABC):
         return data
 
     def count_stars(self):
-        print('count_stars')
+        star_cunter={}
+        for movie in db['movies']:
+            if db['movies'][movie]['series'] ==  self.element:
+                for star in db['movies'][movie]['stars']:
+                    if star not in star_cunter.keys():
+                        star_cunter[star]={
+                            'name':star,
+                            'counter':1
+                        }
+                    else:
+                        star_cunter[star]['counter'] = star_cunter[star]['counter']+1
+                        dir_location=db[self.index][self.element]['dir']+'\\stars\\'+star
+                        if star_cunter[star]['counter'] >= 3 and os.path.isdir(dir_location) is False:
+                            os.mkdir(dir_location)
 
     def config(self):
-
         print('Config ... '+self.element)
-
         with open(db[self.index][self.element]['dir']+'/config.JSON') as f:
             data = json.load(f)
             if self.if_count_stars:
@@ -121,9 +132,12 @@ class ConfigMovies(AbstractConfig):
         return stars_dist
 
     def on_config(self, data, index):
-        data['poster'] = self.get_img('poster')
-        data['cover']  = self.get_img('cover')
-        data['stars']  = self.add_stars(data['stars'],index['stars'])
+        data['cover'] = self.get_img('cover')
+        data['cover'] = self.get_img('cover')
+
+        if "stars" in data:
+            data['stars']  = self.add_stars(data['stars'],index['stars'])
+
         return data
 
 class ConfigStarDir(AbstractDirConfig):
