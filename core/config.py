@@ -61,7 +61,9 @@ class AbstractConfig(ABC):
         for photo in os.listdir(photo_list):
             if name==Path(photo).stem:
                 return db[self.index][self.element]['dir']+'\\'+self.photo_dir+'\\'+photo
-        return defult #add_dir_valid
+        if os.path.exists(defult) is False and defult:
+            print("Location for img defult is invalid "+defult)
+        return defult
 
     def on_config(self,data,index)->data:
         return data
@@ -153,7 +155,7 @@ class ConfigStar(AbstractConfig):
 
         if self.valid_data(data['date_of_birth'],True):
             pass
-
+        print(data)
         return data
 
 class ConfigSeries(AbstractConfig):
