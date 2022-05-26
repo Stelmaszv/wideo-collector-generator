@@ -6,6 +6,7 @@ from pathlib import Path
 from core.defs import set_dir
 from core.dir import StarElment, ScanSerie
 from core.settings import ethnicity,hair_color
+from core.helper import DataValid
 
 with open('dist.json') as f:
     data = f.read()
@@ -107,9 +108,11 @@ class AbstractConfig(ABC):
                 return False
         return False
 
-    def valid_data(self,data):
-        if data!='"YEAR-MOUNT-DAY"':
-            return (len(data.split('-'))==3) #add_valid_for_data
+    def valid_data(self,data,to_today=False):
+        if data!='YEAR-MOUNT-DAY':
+            DV=DataValid()
+            DV.set_data(data,to_today,db[self.index][self.element],self.index)
+            return DV.is_valid()
 
     def config(self):
         print('Config ... '+self.element)
@@ -148,7 +151,7 @@ class ConfigStar(AbstractConfig):
         if self.if_value_is_valid_array(data['hair_color'],hair_color,'Invalid hair_color'):
             pass
 
-        if self.valid_data(data['date_of_birth']):
+        if self.valid_data(data['date_of_birth'],True):
             pass
 
         return data
@@ -187,7 +190,7 @@ class ConfigSeries(AbstractConfig):
 
 class ConfigProducents(AbstractConfig):
 
-    fields = ['show_name','series','tags','description','country']
+    fields = ['show_name','series','tags','description','country','avatar']
     if_count_stars = True
 
     def add_series(self,series):
