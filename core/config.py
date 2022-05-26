@@ -5,6 +5,7 @@ from abc import ABC
 from pathlib import Path
 from core.defs import set_dir
 from core.dir import StarElment, ScanSerie
+from core.settings import ethnicity
 
 with open('dist.json') as f:
     data = f.read()
@@ -141,6 +142,14 @@ class ConfigStar(AbstractConfig):
             data['height'] = data['height']
         else:
             del data['height']
+
+        if data['ethnicity']:
+            if data['ethnicity'] in ethnicity:
+                data['ethnicity']=data['ethnicity']
+            else:
+                print('Invalid ethnicity !')
+                del data['ethnicity']
+        del data['ethnicity']
 
         return data
 

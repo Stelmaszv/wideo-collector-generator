@@ -4,3 +4,5 @@ setings_array = {
     "config"  : True
 }
 movie_ext= ('.avi','.mkv','.mp4','.wmv')
+#stars
+ethnicity=('Asian','Euro','Arab')
