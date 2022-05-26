@@ -108,7 +108,7 @@ class AbstractConfig(ABC):
 
 class ConfigStar(AbstractConfig):
 
-    fields     = ['show_name','avatar','tags']
+    fields     = ['show_name','avatar','tags','hair_color']
     if_count_stars = False
 
     def on_config(self,data,index)->data:
@@ -144,7 +144,7 @@ class ConfigSeries(AbstractConfig):
 
 class ConfigProducents(AbstractConfig):
 
-    fields = ['show_name','series','tags']
+    fields = ['show_name','series','tags','baner']
     if_count_stars = True
 
     def add_series(self,series):
