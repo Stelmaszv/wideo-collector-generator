@@ -242,7 +242,8 @@ class ScanSerie(AbstractScanElement):
                             'dir':new_movie_dir,
                             'series':self.name,
                             'src':self.dir + '\\' + self.scan_dir + '\\' + dir+'\\'+el_in_dir,
-                            'config':str(False)
+                            'config':str(False),
+                            'sezon':dir
                         }
                         MovieElment(self.clear_name(el_in_dir),new_movie_dir).add()
 

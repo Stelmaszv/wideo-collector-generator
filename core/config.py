@@ -46,7 +46,7 @@ class AbstractDirConfig(ABC):
 
 class AbstractConfig(ABC):
 
-    forbiten_fields=['name','dir','config']
+    forbiten_fields=['name','dir','config','src','full_name','sezon']
     fields = []
     photo_dir = 'photos'
     if_count_stars=False
@@ -214,7 +214,7 @@ class ConfigProducents(AbstractConfig):
 
 class ConfigMovies(AbstractConfig):
 
-    fields = ['show_name','poster','cover','stars','tags']
+    fields = ['show_name','poster','cover','stars','tags','description','country','date_relesed']
     photo_dir = ''
 
     def add_stars(self,nstars,stars):
@@ -226,14 +226,21 @@ class ConfigMovies(AbstractConfig):
         return stars_dist
 
     def on_config(self, data, index):
-        data['cover'] = self.get_img('cover')
-        data['cover'] = self.get_img('cover')
+        if self.get_img('cover'):
+            data['cover']=self.get_img('cover')
+
+        if self.get_img('poster'):
+            data['poster']=self.get_img('poster')
 
         if "stars" in data:
             data['stars']  = self.add_stars(data['stars'],index['stars'])
 
         if "tags" in data:
             data['tags']  = self.add_tags(data['tags'])
+
+        if self.valid_data(data['date_relesed']):
+            pass
+
         return data
 
 class ConfigStarDir(AbstractDirConfig):
