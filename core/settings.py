@@ -6,3 +6,4 @@ setings_array = {
 movie_ext= ('.avi','.mkv','.mp4','.wmv')
 #stars
 ethnicity=('Asian','Euro','Arab')
+hair_color=('Blond','Brown')

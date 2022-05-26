@@ -1,12 +1,12 @@
 {
   "show_name": "",
   "description": "",
+  "birth_place": "",
+  "nationality": "",
   "weight": 0,
   "height": 0,
   "ethnicity": "",
   "hair_color": "",
-  "birth_place": "",
-  "nationality": "",
-  "date_of_birth": "",
+  "date_of_birth": "YEAR-MOUNT-DAY",
   "avatar": ""
 }

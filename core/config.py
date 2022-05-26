@@ -5,7 +5,7 @@ from abc import ABC
 from pathlib import Path
 from core.defs import set_dir
 from core.dir import StarElment, ScanSerie
-from core.settings import ethnicity
+from core.settings import ethnicity,hair_color
 
 with open('dist.json') as f:
     data = f.read()
@@ -107,16 +107,32 @@ class AbstractConfig(ABC):
                 return data['avatar']
             return False
 
+    def if_value_is_valid_array(self,value,array,error):
+        if value:
+            if value in array:
+                return value
+            else:
+                print(error)
+                return False
+        return False
+
+    def valid_data(self,data):
+        if data!='"YEAR-MOUNT-DAY"':
+            return (len(data.split('-'))==3)
+
     def config(self):
         print('Config ... '+self.element)
         with open(db[self.index][self.element]['dir']+'/config.JSON') as f:
             data = json.load(f)
             data = self.on_config(data,db[self.index][self.element])
+
             for el in data:
                 if el not in self.forbiten_fields and el in self.fields:
                     db[self.index][self.element][el]=data[el]
                 else:
                     print('Warning ! Field '+el+' is invalid for '+self.index)
+
+
 
 class ConfigStar(AbstractConfig):
 
@@ -127,29 +143,24 @@ class ConfigStar(AbstractConfig):
     def on_config(self,data,index)->data:
         if self.set_avatar(data):
             data['avatar']=self.set_avatar(data)
-        else:
-            del data['avatar']
 
         if "tags" in data:
             data['tags']  = self.add_tags(data['tags'])
 
         if self.valid_number(data['weight'],0):
-            data['weight'] = data['weight']
-        else:
-            del data['weight']
+            pass
 
         if self.valid_number(data['height'],0):
-            data['height'] = data['height']
-        else:
-            del data['height']
+            pass
 
-        if data['ethnicity']:
-            if data['ethnicity'] in ethnicity:
-                data['ethnicity']=data['ethnicity']
-            else:
-                print('Invalid ethnicity !')
-                del data['ethnicity']
-        del data['ethnicity']
+        if self.if_value_is_valid_array(data['ethnicity'],ethnicity,'Invalid Ethnicity'):
+            pass
+
+        if self.if_value_is_valid_array(data['hair_color'],hair_color,'Invalid hair_color'):
+            pass
+
+        if self.valid_data(data['date_of_birth']):
+            pass
 
         return data
 
