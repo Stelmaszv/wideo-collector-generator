@@ -94,6 +94,8 @@ class AbstractConfig(ABC):
         db['tags'].update(tag_dist)
         return {'tags':tag_dist}
 
+    def valid_number(self,number,limit):
+        return (number > limit)
 
     def config(self):
         print('Config ... '+self.element)
@@ -108,13 +110,26 @@ class AbstractConfig(ABC):
 
 class ConfigStar(AbstractConfig):
 
-    fields     = ['show_name','avatar','tags','hair_color']
+    fields     = ['show_name','avatar','tags','hair_color','description','weight',
+                  'height','ethnicity','hair_color','birth_place','nationality','date_of_birth']
     if_count_stars = False
 
     def on_config(self,data,index)->data:
         data['avatar'] = self.get_img('avatar')
+
         if "tags" in data:
             data['tags']  = self.add_tags(data['tags'])
+
+        if self.valid_number(data['weight'],0):
+            data['weight'] = data['weight']
+        else:
+            del data['weight']
+
+        if self.valid_number(data['height'],0):
+            data['height'] = data['height']
+        else:
+            del data['height']
+
         return data
 
 class ConfigSeries(AbstractConfig):
