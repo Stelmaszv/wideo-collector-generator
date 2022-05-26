@@ -97,6 +97,15 @@ class AbstractConfig(ABC):
     def valid_number(self,number,limit):
         return (number > limit)
 
+    def set_avatar(self,data):
+        avatar_stan = self.get_img('avatar')
+        if avatar_stan:
+            return avatar_stan
+        else:
+            if data['avatar']:
+                return data['avatar']
+            return False
+
     def config(self):
         print('Config ... '+self.element)
         with open(db[self.index][self.element]['dir']+'/config.JSON') as f:
@@ -115,7 +124,10 @@ class ConfigStar(AbstractConfig):
     if_count_stars = False
 
     def on_config(self,data,index)->data:
-        data['avatar'] = self.get_img('avatar')
+        if self.set_avatar(data):
+            data['avatar']=self.set_avatar(data)
+        else:
+            del data['avatar']
 
         if "tags" in data:
             data['tags']  = self.add_tags(data['tags'])
