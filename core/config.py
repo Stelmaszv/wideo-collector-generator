@@ -98,15 +98,6 @@ class AbstractConfig(ABC):
     def valid_number(self,number,limit):
         return (number > limit)
 
-    def set_avatar(self,data):
-        avatar_stan = self.get_img('avatar')
-        if avatar_stan:
-            return avatar_stan
-        else:
-            if data['avatar']:
-                return data['avatar']
-            return False
-
     def if_value_is_valid_array(self,value,array,error):
         if value:
             if value in array:
@@ -132,17 +123,16 @@ class AbstractConfig(ABC):
                 else:
                     print('Warning ! Field '+el+' is invalid for '+self.index)
 
-
-
 class ConfigStar(AbstractConfig):
 
     fields     = ['show_name','avatar','tags','hair_color','description','weight',
-                  'height','ethnicity','hair_color','birth_place','nationality','date_of_birth']
+                  'height','ethnicity','hair_color','birth_place','nationality',
+                  'date_of_birth']
     if_count_stars = False
 
     def on_config(self,data,index)->data:
-        if self.set_avatar(data):
-            data['avatar']=self.set_avatar(data)
+        if self.get_img('avatar'):
+            data['avatar'] = self.get_img('avatar')
 
         if "tags" in data:
             data['tags']  = self.add_tags(data['tags'])
@@ -166,7 +156,8 @@ class ConfigStar(AbstractConfig):
 
 class ConfigSeries(AbstractConfig):
 
-    fields = ['show_name','producent','tags']
+    fields = ['show_name','producent','tags','avatar','number_of_sezons',
+              'description','country','years']
     if_count_stars = True
 
     def add_producent(self,producent):
@@ -178,8 +169,16 @@ class ConfigSeries(AbstractConfig):
         ScanSerie(set_location)
         return producent_dist
 
+    def number_of_sezons(self):
+        location=db[self.index][self.element]['dir']+'\\movies'
+        return len(os.listdir(location))
+
     def on_config(self, data, index):
         self.count_stars()
+        data['number_of_sezons'] = self.number_of_sezons()
+
+        if self.get_img('avatar'):
+            data['avatar']=self.get_img('avatar')
 
         if "producent" in data:
             data['producent']  = self.add_producent(data['producent'])
