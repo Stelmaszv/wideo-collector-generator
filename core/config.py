@@ -55,12 +55,12 @@ class AbstractConfig(ABC):
         self.index=index
         self.element = element
 
-    def get_img(self,name):
+    def get_img(self,name,defult):
         photo_list=db[self.index][self.element]['dir']+'\\'+self.photo_dir
         for photo in os.listdir(photo_list):
             if name==Path(photo).stem:
                 return db[self.index][self.element]['dir']+'\\'+self.photo_dir+'\\'+photo
-        return ''
+        return defult #add_dir_valid
 
     def on_config(self,data,index)->data:
         return data
@@ -109,7 +109,7 @@ class AbstractConfig(ABC):
 
     def valid_data(self,data):
         if data!='"YEAR-MOUNT-DAY"':
-            return (len(data.split('-'))==3)
+            return (len(data.split('-'))==3) #add_valid_for_data
 
     def config(self):
         print('Config ... '+self.element)
@@ -131,8 +131,7 @@ class ConfigStar(AbstractConfig):
     if_count_stars = False
 
     def on_config(self,data,index)->data:
-        if self.get_img('avatar'):
-            data['avatar'] = self.get_img('avatar')
+        data['avatar'] = self.get_img('avatar',data['avatar'])
 
         if "tags" in data:
             data['tags']  = self.add_tags(data['tags'])
@@ -176,9 +175,7 @@ class ConfigSeries(AbstractConfig):
     def on_config(self, data, index):
         self.count_stars()
         data['number_of_sezons'] = self.number_of_sezons()
-
-        if self.get_img('avatar'):
-            data['avatar']=self.get_img('avatar')
+        data['avatar']=self.get_img('avatar',data['avatar'])
 
         if "producent" in data:
             data['producent']  = self.add_producent(data['producent'])
@@ -190,7 +187,7 @@ class ConfigSeries(AbstractConfig):
 
 class ConfigProducents(AbstractConfig):
 
-    fields = ['show_name','series','tags','baner']
+    fields = ['show_name','series','tags','description','country']
     if_count_stars = True
 
     def add_series(self,series):
@@ -204,17 +201,19 @@ class ConfigProducents(AbstractConfig):
         return series_dist
 
     def on_config(self, data, index):
+        data['avatar'] = self.get_img('avatar', data['avatar'])
         if "series" in data:
             data['series']  = self.add_series(data['series'])
 
         if "tags" in data:
             data['tags']  = self.add_tags(data['tags'])
-        return data
 
+        return data
 
 class ConfigMovies(AbstractConfig):
 
-    fields = ['show_name','poster','cover','stars','tags','description','country','date_relesed']
+    fields = ['show_name','poster','cover','stars','tags','description',
+              'country','date_relesed']
     photo_dir = ''
 
     def add_stars(self,nstars,stars):
@@ -226,11 +225,8 @@ class ConfigMovies(AbstractConfig):
         return stars_dist
 
     def on_config(self, data, index):
-        if self.get_img('cover'):
-            data['cover']=self.get_img('cover')
-
-        if self.get_img('poster'):
-            data['poster']=self.get_img('poster')
+        data['cover']=self.get_img('cover',data['cover'])
+        data['poster']=self.get_img('poster',data['poster'])
 
         if "stars" in data:
             data['stars']  = self.add_stars(data['stars'],index['stars'])
@@ -240,7 +236,6 @@ class ConfigMovies(AbstractConfig):
 
         if self.valid_data(data['date_relesed']):
             pass
-
         return data
 
 class ConfigStarDir(AbstractDirConfig):
