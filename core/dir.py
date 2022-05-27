@@ -64,7 +64,6 @@ class AbstractScan(ABC):
                 dir_list_elemnts = os.listdir(self.dir + '\\' + dir)
                 for el in dir_list_elemnts:
                     self.FactoryScan(self.dir + '\\' + dir + '\\' + el).scan()
-
         os.remove("dist.json")
         a_file = open("dist.json", "w")
         json.dump(db, a_file)
@@ -122,24 +121,9 @@ class BasseScan:
         return str
 
     def set_dir(self, name,star_dir):
-        letter_of_movie = name[0]
-        letter = letter_of_movie.upper()
+        from core.defs import set_dir
         from run import data_json_dirs
-        star_dir=data_json_dirs[star_dir]
-        dir = ''
-        if letter == 'A' or letter == 'B' or letter == 'C' or letter == 'D':
-            dir = star_dir + '\\A-D\\' + name
-        if letter == 'E' or letter == 'F' or letter == 'G' or letter == 'H':
-            dir = star_dir + '\\E-H\\' + name
-        if letter == 'I' or letter == 'J' or letter == 'K' or letter == 'L':
-            dir = star_dir + '\\I-L\\' + name
-        if letter == 'M' or letter == 'N' or letter == 'O' or letter == 'P' or letter == 'Q':
-            dir = star_dir + '\\M-P\\' + name
-        if letter == 'R' or letter == 'S' or letter == 'T' or letter == 'U':
-            dir = star_dir + '\\R-U\\' + name
-        if letter == 'W' or letter == 'V' or letter == 'X' or letter == 'Y' or letter == 'Z':
-            dir = star_dir + '\\W-Z\\' + name
-        return dir
+        return set_dir(name,data_json_dirs[star_dir])
 
     def init_dir(self):
         for dir in self.base_dir:
@@ -174,6 +158,7 @@ class StarElment(AbstractAddElment):
         self.create_dir()
         self.create_json_config()
         self.init_dir()
+        db['stars'][name] = {'name': name, 'config': str(False),'dir':self.dir}
 
     def create_dir(self):
         self.dir=self.set_dir(self.name,'stars')
@@ -187,15 +172,19 @@ class MovieElment(AbstractAddElment):
 
     validValue = "[a-zA-Z0-9]+\s+\([a-zA-Z0-9\s]+\)";
 
+    def add_stars(self,stars):
+        stars_dist={}
+        for star in stars:
+            stars_dist[star]={"star_name":star}
+        return stars_dist
+
     def add(self):
         stars = self.faind_stars(db['movies'][self.name]['full_name'])
-        stars_dist = {"star_name" : star for star in stars}
-        db['movies'][self.name]['stars'] = stars_dist
+        db['movies'][self.name]['stars'] = self.add_stars(stars)
         self.add_stars_in_movie_to_db(stars)
 
     def add_stars_in_movie_to_db(self,stars):
         for star in stars:
-            db['stars'][star]={'name':star}
             StarElment(star).add()
 
     def faind_stars(self, file):
@@ -230,7 +219,6 @@ class AbstractScanElement(ABC,BasseScan):
     def add_to_db(self):
         pass
 
-
 class ScanSerie(AbstractScanElement):
 
     scan_dir = 'movies'
@@ -253,13 +241,15 @@ class ScanSerie(AbstractScanElement):
                             'full_name':el_in_dir,
                             'dir':new_movie_dir,
                             'series':self.name,
-                            'src':self.dir + '\\' + self.scan_dir + '\\' + dir+'\\'+el_in_dir
+                            'src':self.dir + '\\' + self.scan_dir + '\\' + dir+'\\'+el_in_dir,
+                            'config':str(False),
+                            'sezon':dir
                         }
                         MovieElment(self.clear_name(el_in_dir),new_movie_dir).add()
 
 
     def add_to_db(self):
-        db['series'][self.name]={'name':self.name,'dir':self.dir}
+        db['series'][self.name]={'name':self.name,'dir':self.dir,'config':str(False)}
         self.db_el=db['series'][self.name]
 
 class ScanStar(AbstractScanElement):
@@ -279,6 +269,7 @@ class ScanProducent(AbstractScanElement):
         db['producents'][self.name]={
             'name': self.name,
             'dir': self.dir,
+            'config': str(False)
         }
 
 class StarsDir(AbstractScan):
