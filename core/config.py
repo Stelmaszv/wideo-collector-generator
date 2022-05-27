@@ -27,9 +27,6 @@ class ConfigModule:
         for dir in db:
             if dir != "tags":
                 config_dirs[dir](dir).start_config()
-        a_file = open("dist.json", "w")
-        json.dump(db, a_file)
-        a_file.close()
 
 class AbstractDirConfig(ABC):
 
@@ -127,6 +124,9 @@ class AbstractConfig(ABC):
                     db[self.index][self.element][el]=data[el]
                 else:
                     print('Warning ! Field '+el+' is invalid for '+self.index)
+        a_file = open("dist.json", "w")
+        json.dump(db, a_file)
+        a_file.close()
 
 class ConfigStar(AbstractConfig):
 
