@@ -1,37 +1,41 @@
 import ast
+from abc import ABC
+
 with open('dist.json') as f:
     data = f.read()
     db = ast.literal_eval(data)
 
-
-class WebSraberModule:
-
-    def __int__(self):
-        print('init')
+class WebScraperModule:
 
     def start(self):
-        config_dirs= {
-            "movies" :MoviesScraber,
-            "stars": StarsScraber,
-            "series": SeriesScraber,
+        dirs= {
+            "movies" : MoviesScraper,
+            "stars"  : StarsScraper,
+            "series" : SeriesScraper
         }
         for dir in db:
             if dir != "tags" and dir != 'producents':
-                config_dirs[dir]().start_config()
+                Scraper=dirs[dir]()
+                Scraper.set_dir(dir)
+                Scraper.start_scraper()
 
-class MoviesScraber:
 
-    def start_config(self):
+class AbstractScraper(ABC):
+
+    def set_dir(self,dir):
+        self.dir=dir
+
+class MoviesScraper(AbstractScraper):
+
+    def start_scraper(self):
         print('movies scrabing')
 
+class StarsScraper(AbstractScraper):
 
-class StarsScraber:
-
-    def start_config(self):
+    def start_scraper(self):
         print('stars scrabing')
 
-class SeriesScraber:
+class SeriesScraper(AbstractScraper):
 
-
-    def start_config(self):
+    def start_scraper(self):
         print('Series scrabing')

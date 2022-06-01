@@ -14,9 +14,6 @@ with open('dist.json') as f:
 
 class ConfigModule:
 
-    def __int__(self):
-        print('init')
-
     def start(self):
         config_dirs= {
             "series"  :ConfigSeriesDir,
@@ -155,7 +152,6 @@ class ConfigStar(AbstractConfig):
 
         if self.valid_data(data['date_of_birth'],True):
             pass
-        print(data)
         return data
 
 class ConfigSeries(AbstractConfig):
