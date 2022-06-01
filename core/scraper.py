@@ -1,18 +1,27 @@
-class FilmWEB:
+from abc import ABC,abstractmethod
+
+class AbstractScraperMovies(ABC):
+
+    @abstractmethod
     def set_show_name(self)->str:
-        return ''
+        pass
 
+    @abstractmethod
     def description(self)->str:
-        return  ''
+        pass
 
+    @abstractmethod
     def date_relesed(self)->str:
-        return  ''
+        pass
 
+    @abstractmethod
     def cover(self)->str:
-        return  ''
+        pass
 
+    @abstractmethod
     def country(self)->str:
-        return  ''
+        pass
 
+    @abstractmethod
     def poster(self)->str:
-        return  ''
+        pass

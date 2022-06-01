@@ -53,9 +53,9 @@ class MoviesScraperFactory(AbstractScraperFactory):
             data = json.load(f)
 
             if "scraper" in data:
-                self.Scraper = scrapers[data['scraper']]()
+                self.Scraper = scrapers[data['scraper']]().MoviesScraber()
             else:
-                self.Scraper = scraper()
+                self.Scraper = scraper().MoviesScraber()
 
             data = self.start_scraping(data)
             for el in data:

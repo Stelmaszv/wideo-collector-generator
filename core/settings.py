@@ -9,7 +9,7 @@ movie_ext= ('.avi','.mkv','.mp4','.wmv')
 ethnicity=('Asian','Euro','Arab')
 hair_color=('Blond','Brown')
 #scraper
-from core.scraper import  FilmWEB
+from app.custume_scraper import FilmWEB
 scrapers={
     "film_web"    :FilmWEB,
 }
