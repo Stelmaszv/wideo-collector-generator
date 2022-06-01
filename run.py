@@ -22,10 +22,15 @@ else:
 
 from core.dir import ScanDirs
 from core.config import ConfigModule
+from core.websrabermodule import WebSraberModule
 moduls = [
     {
         "obj": ScanDirs(data_json_dirs), "method": 'start',
         "stan": setings_array["scan_dir"], "start_mes": 'Scaning Dir ... Start', "end_mees": 'End scaning Dir ... OK',
+    },
+    {
+        "obj":  WebSraberModule(), "method": 'start',
+        "stan": setings_array["scraper"], "start_mes": 'WebSraber ... Start', "end_mees": 'End of WebSraber ... ok',
     },
     {
         "obj": ConfigModule(), "method": 'start',
