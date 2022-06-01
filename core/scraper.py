@@ -1,8 +1,18 @@
-class FilmWEBUrl:
-    pass
+class FilmWEB:
+    def set_show_name(self)->str:
+        return ''
 
-class FilmWEBUrlList:
-    pass
+    def description(self)->str:
+        return  ''
 
-class FilmWEBUrlListSearch:
-    pass
+    def date_relesed(self)->str:
+        return  ''
+
+    def cover(self)->str:
+        return  ''
+
+    def country(self)->str:
+        return  ''
+
+    def poster(self)->str:
+        return  ''

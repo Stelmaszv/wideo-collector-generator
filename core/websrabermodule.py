@@ -1,6 +1,8 @@
 import ast
 import json
+import os
 from abc import ABC,abstractmethod
+from core.settings import default_scraper,scrapers,scraper
 
 with open('dist.json') as f:
     data = f.read()
@@ -21,6 +23,8 @@ class WebScraperModule:
 
 class AbstractScraperFactory(ABC):
 
+    Scraper =None
+
     def set_data(self, index, element):
         self.index = index
         self.element = element
@@ -33,12 +37,33 @@ class AbstractScraperFactory(ABC):
     def on_scraper(self):
         pass
 
+    def start_scraping(self,data)->data:
+        data['show_name']   = self.Scraper.set_show_name()
+        data['description'] = self.Scraper.description()
+        data['date_relesed'] = self.Scraper.date_relesed()
+        data['country'] = self.Scraper.country()
+        data['cover'] = self.Scraper.cover()
+        data['poster'] = self.Scraper.poster()
+        return data
+
 class MoviesScraperFactory(AbstractScraperFactory):
 
     def on_scraper(self):
         with open(db[self.index][self.element]['dir'] + '/config.JSON') as f:
             data = json.load(f)
-            print(data['show_name'])
+
+            if "scraper" in data:
+                self.Scraper = scrapers[data['scraper']]()
+            else:
+                self.Scraper = scraper()
+
+            data = self.start_scraping(data)
+            for el in data:
+                db[self.index][self.element][el]=data[el]
+            os.remove("dist.json")
+            a_file = open("dist.json", "w")
+            json.dump(db, a_file)
+            a_file.close()
 
 class SeriesScraperFactory(AbstractScraperFactory):
 

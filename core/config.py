@@ -121,6 +121,7 @@ class AbstractConfig(ABC):
                     db[self.index][self.element][el]=data[el]
                 else:
                     print('Warning ! Field '+el+' is invalid for '+self.index)
+        os.remove("dist.json")
         a_file = open("dist.json", "w")
         json.dump(db, a_file)
         a_file.close()
@@ -129,7 +130,7 @@ class ConfigStar(AbstractConfig):
 
     fields     = ['show_name','avatar','tags','hair_color','description','weight',
                   'height','ethnicity','hair_color','birth_place','nationality',
-                  'date_of_birth']
+                  'date_of_birth','scraper']
     if_count_stars = False
 
     def on_config(self,data,index)->data:
@@ -157,7 +158,7 @@ class ConfigStar(AbstractConfig):
 class ConfigSeries(AbstractConfig):
 
     fields = ['show_name','producent','tags','avatar','number_of_sezons',
-              'description','country','years']
+              'description','country','years','scraper']
     if_count_stars = True
 
     def add_producent(self,producent):
@@ -188,7 +189,7 @@ class ConfigSeries(AbstractConfig):
 
 class ConfigProducents(AbstractConfig):
 
-    fields = ['show_name','series','tags','description','country','avatar']
+    fields = ['show_name','series','tags','description','country','avatar','scraper']
     if_count_stars = True
 
     def add_series(self,series):
@@ -214,7 +215,7 @@ class ConfigProducents(AbstractConfig):
 class ConfigMovies(AbstractConfig):
 
     fields = ['show_name','poster','cover','stars','tags','description',
-              'country','date_relesed']
+              'country','date_relesed','scraper']
     photo_dir = ''
 
     def add_stars(self,nstars,stars):
