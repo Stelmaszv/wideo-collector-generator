@@ -1,4 +1,5 @@
 import ast
+import json
 from abc import ABC,abstractmethod
 
 with open('dist.json') as f:
@@ -35,7 +36,9 @@ class AbstractScraperFactory(ABC):
 class MoviesScraperFactory(AbstractScraperFactory):
 
     def on_scraper(self):
-        print('movies  scraper')
+        with open(db[self.index][self.element]['dir'] + '/config.JSON') as f:
+            data = json.load(f)
+            print(data['show_name'])
 
 class SeriesScraperFactory(AbstractScraperFactory):
 
