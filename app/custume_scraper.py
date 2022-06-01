@@ -1,7 +1,10 @@
 from core.scraper import AbstractScraperMovies
-
+from selenium.webdriver.common.by import By
 
 class FilmWEBMovies(AbstractScraperMovies):
+
+    url = ''
+
     def set_show_name(self)->str:
         return ''
 

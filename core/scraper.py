@@ -1,6 +1,15 @@
 from abc import ABC,abstractmethod
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+chrome = webdriver.Chrome(ChromeDriverManager().install())
 
 class AbstractScraperMovies(ABC):
+
+    url=''
+
+    def __init__(self,dir):
+        self.chrome=chrome
+        self.chrome.get(self.url)
 
     @abstractmethod
     def set_show_name(self)->str:
