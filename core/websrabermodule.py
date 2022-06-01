@@ -1,5 +1,5 @@
 import ast
-from abc import ABC
+from abc import ABC,abstractmethod
 
 with open('dist.json') as f:
     data = f.read()
@@ -9,33 +9,45 @@ class WebScraperModule:
 
     def start(self):
         dirs= {
-            "movies" : MoviesScraper,
-            "stars"  : StarsScraper,
-            "series" : SeriesScraper
+            "movies" : MoviesScraperDir
         }
         for dir in db:
-            if dir != "tags" and dir != 'producents':
-                Scraper=dirs[dir]()
-                Scraper.set_dir(dir)
+            if dir != "tags" and dir != 'producents' and dir != 'series' and dir != 'stars':
+                Scraper=dirs[dir](dir)
                 Scraper.start_scraper()
 
+class AbstractScraperFactory(ABC):
 
-class AbstractScraper(ABC):
+    def set_data(self, index, element):
+        self.index = index
+        self.element = element
 
-    def set_dir(self,dir):
-        self.dir=dir
+    def scraper(self,index,element):
+        self.set_data(index,element)
+        self.on_scraper()
 
-class MoviesScraper(AbstractScraper):
+    @abstractmethod
+    def on_scraper(self):
+        pass
+
+class MoviesScraperFactory(AbstractScraperFactory):
+
+    def on_scraper(self):
+        print('movies  scraper')
+
+class AbstractDirScraper(ABC):
+
+    scraper_mess=''
+    FactoryScraper=None
+
+    def __init__(self,index):
+        self.index=index
 
     def start_scraper(self):
-        print('movies scrabing')
+        print(self.scraper_mess)
+        for el in db[self.index]:
+            self.FactoryScraper().scraper(self.index,el)
 
-class StarsScraper(AbstractScraper):
-
-    def start_scraper(self):
-        print('stars scrabing')
-
-class SeriesScraper(AbstractScraper):
-
-    def start_scraper(self):
-        print('Series scrabing')
+class MoviesScraperDir(AbstractDirScraper):
+    FactoryScraper = MoviesScraperFactory
+    scraper_mess = 'Scraping Movies ... Start'
