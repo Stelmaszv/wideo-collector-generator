@@ -9,10 +9,11 @@ class WebScraperModule:
 
     def start(self):
         dirs= {
-            "movies" : MoviesScraperDir
+            "movies" : MoviesScraperDir,
+            "series" : SeriesScraperDir
         }
         for dir in db:
-            if dir != "tags" and dir != 'producents' and dir != 'series' and dir != 'stars':
+            if dir != "tags" and dir != 'producents' and dir != 'stars':
                 Scraper=dirs[dir](dir)
                 Scraper.start_scraper()
 
@@ -35,6 +36,11 @@ class MoviesScraperFactory(AbstractScraperFactory):
     def on_scraper(self):
         print('movies  scraper')
 
+class SeriesScraperFactory(AbstractScraperFactory):
+
+    def on_scraper(self):
+        print('Series')
+
 class AbstractDirScraper(ABC):
 
     scraper_mess=''
@@ -51,3 +57,8 @@ class AbstractDirScraper(ABC):
 class MoviesScraperDir(AbstractDirScraper):
     FactoryScraper = MoviesScraperFactory
     scraper_mess = 'Scraping Movies ... Start'
+
+class SeriesScraperDir(AbstractDirScraper):
+    FactoryScraper = SeriesScraperFactory
+    scraper_mess = 'Scraping Series ... Start'
+
