@@ -5,7 +5,7 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 import validators
 chrome = webdriver.Chrome(ChromeDriverManager().install())
-
+#test
 class AbstractScraperMovies(ABC):
 
     url=''
