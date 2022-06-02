@@ -38,12 +38,6 @@ class AbstractScraperFactory(ABC):
         pass
 
     def start_scraping(self,data)->data:
-        data['show_name']   = self.Scraper.set_show_name()
-        data['description'] = self.Scraper.description()
-        data['date_relesed'] = self.Scraper.date_relesed()
-        data['country'] = self.Scraper.country()
-        data['cover'] = self.Scraper.cover()
-        data['poster'] = self.Scraper.poster()
         return data
 
     def start_scraping_main(self,data):
@@ -62,11 +56,28 @@ class MoviesScraperFactory(AbstractScraperFactory):
             data = json.load(f)
 
             if "scraper" in data:
-                self.Scraper = scrapers[data['scraper']]().MoviesScraber('test')
+                self.Scraper = scrapers[data['scraper']]()
             else:
-                self.Scraper = scraper().MoviesScraber('test')
+                self.Scraper = scraper()
 
-            self.start_scraping_main(data)
+            self.MoviesScraber = self.Scraper.MoviesScraber
+            type = self.MoviesScraber.type
+            if type == 'list':
+                series_name = db[self.index][self.element]['series']
+                series_index = db['series'][series_name]
+                series_scraper=self.Scraper.SeriesScraber(series_index)
+                if series_scraper.list_error:
+                    series_scraper.faind(db[self.index][self.element]['name'])
+            #self.start_scraping_main(data)
+
+    def start_scraping(self,data)->data:
+        data['show_name']   = self.MoviesScraber.set_show_name()
+        data['description'] = self.MoviesScraber.description()
+        data['date_relesed'] = self.MoviesScraber.date_relesed()
+        data['country'] = self.MoviesScraber.country()
+        data['cover'] = self.MoviesScraber.cover()
+        data['poster'] = self.MoviesScraber.poster()
+        return data
 
 class SeriesScraperFactory(AbstractScraperFactory):
 
@@ -74,7 +85,7 @@ class SeriesScraperFactory(AbstractScraperFactory):
         with open(db[self.index][self.element]['dir'] + '/config.JSON') as f:
             data = json.load(f)
             if "scraper" in data:
-                self.Scraper = scrapers[data['scraper']]().SeriesScraber('test')
+                self.Scraper = scrapers[data['scraper']]().SeriesScraber()
             else:
                 self.Scraper = scraper().SeriesScraber(db[self.index][self.element])
             if self.Scraper.list_error:
