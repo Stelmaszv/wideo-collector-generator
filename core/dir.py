@@ -226,8 +226,19 @@ class ScanSerie(AbstractScanElement):
     db_el=''
     shema_url = 'json_schema/series.JSON'
 
+    def create_scraber_list(self,list):
+        elements={}
+        for el in list:
+            elements[el]=''
+
+        os.remove(db['series'][self.name]['dir']+'/scraber_list.json')
+        a_file = open(db['series'][self.name]['dir']+'/scraber_list.json', "w")
+        json.dump(elements, a_file)
+        a_file.close()
+
     def scan(self):
         dir_list = os.listdir(self.dir + '\\' + self.scan_dir);
+        db['series'][self.name]['movies'] = {}
         for dir in dir_list:
             is_dir = os.path.isdir(self.dir + '\\' + self.scan_dir + '\\' + dir)
             if is_dir:
@@ -236,6 +247,7 @@ class ScanSerie(AbstractScanElement):
                     if el_in_dir.endswith(movie_ext):
                         movie_dir=self.dir+'\\'+dir
                         new_movie_dir=movie_dir.replace("series", "movies")
+                        db['series'][self.name]['movies'][self.clear_name(el_in_dir)]=self.clear_name(el_in_dir)
                         db['movies'][self.clear_name(el_in_dir)]={
                             'name':self.clear_name(el_in_dir),
                             'full_name':el_in_dir,
@@ -246,7 +258,7 @@ class ScanSerie(AbstractScanElement):
                             'sezon':dir
                         }
                         MovieElment(self.clear_name(el_in_dir),new_movie_dir).add()
-
+        self.create_scraber_list(db['series'][self.name]['movies'])
 
     def add_to_db(self):
         db['series'][self.name]={'name':self.name,'dir':self.dir,'config':str(False)}
