@@ -231,10 +231,11 @@ class ScanSerie(AbstractScanElement):
         for el in list:
             elements[el]=''
 
-        os.remove(db['series'][self.name]['dir']+'/scraber_list.json')
-        a_file = open(db['series'][self.name]['dir']+'/scraber_list.json', "w")
-        json.dump(elements, a_file)
-        a_file.close()
+        location=db['series'][self.name]['dir']+'/scraber_list.json';
+        if os.path.exists(location) is False:
+            a_file = open(location, "w")
+            json.dump(elements, a_file)
+            a_file.close()
 
     def scan(self):
         dir_list = os.listdir(self.dir + '\\' + self.scan_dir);

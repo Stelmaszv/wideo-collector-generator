@@ -68,8 +68,8 @@ class MoviesScraperFactory(AbstractScraperFactory):
                 series_scraper=self.Scraper.SeriesScraper(series_index)
                 if series_scraper.list_error:
                     url=series_scraper.faind(db[self.index][self.element]['name'])
-                    self.MoviesScraper(url)
-            #self.start_scraping_main(data)
+                    self.MoviesScraper=self.MoviesScraper(url)
+            self.start_scraping_main(data)
 
     def start_scraping(self,data)->data:
         data['show_name']   = self.MoviesScraper.set_show_name()

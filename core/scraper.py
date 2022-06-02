@@ -3,16 +3,20 @@ import os
 from abc import ABC,abstractmethod
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
+import validators
 chrome = webdriver.Chrome(ChromeDriverManager().install())
 
 class AbstractScraperMovies(ABC):
 
     url=''
+    debug=False
     def __init__(self,url):
         self.url=url
         self.chrome=chrome
-        if self.url:
+        if validators.url(self.url):
             self.chrome.get(self.url)
+        if self.debug:
+            print(self.url)
 
     @abstractmethod
     def set_show_name(self)->str:
