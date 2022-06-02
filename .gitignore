@@ -2,3 +2,4 @@
 data.JSON
 /chromedriver.exe
 /scrabers/
+/core/scrapers.py

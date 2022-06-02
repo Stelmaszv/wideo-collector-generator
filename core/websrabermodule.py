@@ -86,7 +86,7 @@ class SeriesScraperFactory(AbstractScraperFactory):
         with open(db[self.index][self.element]['dir'] + '/config.JSON') as f:
             data = json.load(f)
             if "scraper" in data:
-                self.Scraper = scrapers[data['scraper']]().SeriesScraper()
+                self.Scraper = scrapers[data['scraper']]().SeriesScraper(db[self.index][self.element])
             else:
                 self.Scraper = scraper().SeriesScraper(db[self.index][self.element])
             type = self.Scraper.type
