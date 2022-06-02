@@ -5,15 +5,16 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 import validators
 chrome = webdriver.Chrome(ChromeDriverManager().install())
-#test
 class AbstractScraperMovies(ABC):
 
     url=''
     debug=False
-    def __init__(self,url):
-        self.url=url
+    def __init__(self,url,index):
+        self.index=index
+        self.url = url
         self.chrome=chrome
         if validators.url(self.url):
+            print('Scraping Movie ... ' + self.index['name'])
             self.chrome.get(self.url)
         if self.debug:
             print(self.url)

@@ -68,15 +68,20 @@ class MoviesScraperFactory(AbstractScraperFactory):
                 series_scraper=self.Scraper.SeriesScraper(series_index)
                 if series_scraper.list_error:
                     url=series_scraper.faind(db[self.index][self.element]['name'])
-                    self.MoviesScraper=self.MoviesScraper(url)
-            self.start_scraping_main(data)
+                    self.MoviesScraper=self.MoviesScraper(url,db[self.index][self.element])
+
+        self.start_scraping_main(data)
+        os.remove(db[self.index][self.element]['dir'] + '\config.JSON')
+        a_file = open(db[self.index][self.element]['dir'] + "\config.JSON", "x")
+        json.dump(data, a_file)
+        a_file.close()
 
     def start_scraping(self,data)->data:
         data['show_name']   = self.MoviesScraper.set_show_name()
         data['description'] = self.MoviesScraper.description()
         data['date_relesed'] = self.MoviesScraper.date_relesed()
         data['country'] = self.MoviesScraper.country()
-        data['cover'] = self.MoviesScraper.cover()
+        self.MoviesScraper.cover()
         data['poster'] = self.MoviesScraper.poster()
         return data
 
