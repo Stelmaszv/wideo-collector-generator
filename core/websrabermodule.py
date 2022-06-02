@@ -46,6 +46,15 @@ class AbstractScraperFactory(ABC):
         data['poster'] = self.Scraper.poster()
         return data
 
+    def start_scraping_main(self,data):
+        data = self.start_scraping(data)
+        for el in data:
+            db[self.index][self.element][el] = data[el]
+        os.remove("dist.json")
+        a_file = open("dist.json", "w")
+        json.dump(db, a_file)
+        a_file.close()
+
 class MoviesScraperFactory(AbstractScraperFactory):
 
     def on_scraper(self):
@@ -57,18 +66,19 @@ class MoviesScraperFactory(AbstractScraperFactory):
             else:
                 self.Scraper = scraper().MoviesScraber('test')
 
-            data = self.start_scraping(data)
-            for el in data:
-                db[self.index][self.element][el]=data[el]
-            os.remove("dist.json")
-            a_file = open("dist.json", "w")
-            json.dump(db, a_file)
-            a_file.close()
+            self.start_scraping_main(data)
 
 class SeriesScraperFactory(AbstractScraperFactory):
 
     def on_scraper(self):
-        print('Series')
+        with open(db[self.index][self.element]['dir'] + '/config.JSON') as f:
+            data = json.load(f)
+            if "scraper" in data:
+                self.Scraper = scrapers[data['scraper']]().SeriesScraber('test')
+            else:
+                self.Scraper = scraper().SeriesScraber(db[self.index][self.element])
+            if self.Scraper.list_error:
+                self.start_scraping_main(data)
 
 class StartScraperFactory(AbstractScraperFactory):
 
