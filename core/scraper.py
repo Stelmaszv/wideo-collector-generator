@@ -1,3 +1,4 @@
+import json
 import os
 from abc import ABC,abstractmethod
 from selenium import webdriver
@@ -7,7 +8,8 @@ chrome = webdriver.Chrome(ChromeDriverManager().install())
 class AbstractScraperMovies(ABC):
 
     url=''
-    def __init__(self,dir):
+    def __init__(self,url):
+        self.url=url
         self.chrome=chrome
         if self.url:
             self.chrome.get(self.url)
@@ -49,6 +51,9 @@ class AbstractScraperSeriesList(ABC):
 
     def faind(self,name):
         self.list_error_mess()
+        with open(self.list_location) as f:
+            data = json.load(f)
+            return data[name]
 
     def list_error_mess(self):
         if self.list_error is False:

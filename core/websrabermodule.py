@@ -60,23 +60,24 @@ class MoviesScraperFactory(AbstractScraperFactory):
             else:
                 self.Scraper = scraper()
 
-            self.MoviesScraber = self.Scraper.MoviesScraber
-            type = self.MoviesScraber.type
+            self.MoviesScraper = self.Scraper.MoviesScraper
+            type = self.MoviesScraper.type
             if type == 'list':
                 series_name = db[self.index][self.element]['series']
                 series_index = db['series'][series_name]
-                series_scraper=self.Scraper.SeriesScraber(series_index)
+                series_scraper=self.Scraper.SeriesScraper(series_index)
                 if series_scraper.list_error:
-                    series_scraper.faind(db[self.index][self.element]['name'])
+                    url=series_scraper.faind(db[self.index][self.element]['name'])
+                    self.MoviesScraper(url)
             #self.start_scraping_main(data)
 
     def start_scraping(self,data)->data:
-        data['show_name']   = self.MoviesScraber.set_show_name()
-        data['description'] = self.MoviesScraber.description()
-        data['date_relesed'] = self.MoviesScraber.date_relesed()
-        data['country'] = self.MoviesScraber.country()
-        data['cover'] = self.MoviesScraber.cover()
-        data['poster'] = self.MoviesScraber.poster()
+        data['show_name']   = self.MoviesScraper.set_show_name()
+        data['description'] = self.MoviesScraper.description()
+        data['date_relesed'] = self.MoviesScraper.date_relesed()
+        data['country'] = self.MoviesScraper.country()
+        data['cover'] = self.MoviesScraper.cover()
+        data['poster'] = self.MoviesScraper.poster()
         return data
 
 class SeriesScraperFactory(AbstractScraperFactory):
@@ -85,11 +86,13 @@ class SeriesScraperFactory(AbstractScraperFactory):
         with open(db[self.index][self.element]['dir'] + '/config.JSON') as f:
             data = json.load(f)
             if "scraper" in data:
-                self.Scraper = scrapers[data['scraper']]().SeriesScraber()
+                self.Scraper = scrapers[data['scraper']]().SeriesScraper()
             else:
-                self.Scraper = scraper().SeriesScraber(db[self.index][self.element])
-            if self.Scraper.list_error:
-                self.start_scraping_main(data)
+                self.Scraper = scraper().SeriesScraper(db[self.index][self.element])
+            type = self.Scraper.type
+            if type == 'list':
+                if self.Scraper.list_error:
+                    self.start_scraping_main(data)
 
 class StartScraperFactory(AbstractScraperFactory):
 
