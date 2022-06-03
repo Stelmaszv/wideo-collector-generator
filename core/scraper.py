@@ -42,7 +42,7 @@ class AbstractScraperMovies(ABC):
         return  'YEAR-MOUNT-DAY'
 
     @abstractmethod
-    def cover(self)->str:
+    def cover(self,cover)->str:
         pass
 
     @abstractmethod

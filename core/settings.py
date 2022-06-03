@@ -13,3 +13,4 @@ hair_color=('Blond','Brown')
 default_scraper=True
 default_scraper_var='film_web'
 scraper=scrapers[default_scraper_var] #film_web
+download_galery=False

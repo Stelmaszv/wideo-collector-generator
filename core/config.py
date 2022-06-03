@@ -55,8 +55,6 @@ class AbstractConfig(ABC):
         for photo in os.listdir(photo_list):
             if name==Path(photo).stem:
                 return db[self.index][self.element]['dir']+'\\'+self.photo_dir+'\\'+photo
-        if os.path.exists(defult) is False and defult:
-            print("Location for img defult is invalid "+defult)
         return defult
 
     def on_config(self,data,index)->data:
@@ -229,6 +227,14 @@ class ConfigMovies(AbstractConfig):
     def on_config(self, data, index):
         data['cover']=self.get_img('cover',data['cover'])
         data['poster']=self.get_img('poster',data['poster'])
+
+
+        if os.path.exists(data['cover']) is False and data['cover']:
+            print("Location for img defult is invalid "+data['cover'])
+
+        if os.path.exists(data['poster']) is False and data['poster']:
+            print("Location for img defult is invalid "+data['poster'])
+
 
         if "stars" in data:
             data['stars']  = self.add_stars(data['stars'],index['stars'])

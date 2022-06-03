@@ -222,7 +222,7 @@ class AbstractScanElement(ABC,BasseScan):
 class ScanSerie(AbstractScanElement):
 
     scan_dir = 'movies'
-    base_dir=['movies','photos','banners','stars']
+    base_dir=['movies','photos','banners','stars','covers']
     db_el=''
     shema_url = 'json_schema/series.JSON'
 

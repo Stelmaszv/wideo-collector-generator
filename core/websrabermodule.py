@@ -2,7 +2,7 @@ import ast
 import json
 import os
 from abc import ABC,abstractmethod
-from core.settings import default_scraper,scrapers,scraper,default_scraper_var
+from core.settings import default_scraper, scrapers, scraper,download_galery
 
 with open('dist.json') as f:
     data = f.read()
@@ -86,13 +86,14 @@ class MoviesScraperFactory(AbstractScraperFactory):
             a_file.close()
 
     def start_scraping(self,data)->data:
-        data['show_name']   = self.MoviesScraper.set_show_name()
-        data['description'] = self.MoviesScraper.description()
+        data['show_name']    = self.MoviesScraper.set_show_name()
+        data['description']  = self.MoviesScraper.description()
         data['date_relesed'] = self.MoviesScraper.date_relesed()
-        data['country'] = self.MoviesScraper.country()
-        data['poster'] = self.MoviesScraper.poster()
-        self.MoviesScraper.cover()
-        self.MoviesScraper.galery()
+        data['country']      = self.MoviesScraper.country()
+        data['poster']       = self.MoviesScraper.poster()
+        data['cover']        = self.MoviesScraper.cover(data['cover'])
+        if download_galery:
+            self.MoviesScraper.galery()
         return data
 
 class SeriesScraperFactory(AbstractScraperFactory):
