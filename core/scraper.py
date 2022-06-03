@@ -1,6 +1,8 @@
 import json
 import os
 from abc import ABC,abstractmethod
+
+import requests
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 import validators
@@ -19,6 +21,15 @@ class AbstractScraperMovies(ABC):
         if self.debug:
             print(self.url)
 
+    def save_in_galery(self,photos):
+        for el in photos:
+            name = el.split('/')[len(el.split('/')) - 1]
+            img_data = requests.get(el).content
+            with open(self.index['dir']+'/' + name, 'wb') as handler:
+                print('Downloading galery for '+self.index['name']+'  from ' + el)
+                handler.write(img_data)
+
+
     @abstractmethod
     def set_show_name(self)->str:
         pass
@@ -27,9 +38,8 @@ class AbstractScraperMovies(ABC):
     def description(self)->str:
         pass
 
-    @abstractmethod
     def date_relesed(self)->str:
-        pass
+        return  'YEAR-MOUNT-DAY'
 
     @abstractmethod
     def cover(self)->str:
@@ -41,6 +51,9 @@ class AbstractScraperMovies(ABC):
 
     @abstractmethod
     def poster(self)->str:
+        pass
+
+    def galery(self):
         pass
 
 class AbstractScraperMoviesList(AbstractScraperMovies):
