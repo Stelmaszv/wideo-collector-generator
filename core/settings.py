@@ -11,4 +11,5 @@ ethnicity=('Asian','Euro','Arab')
 hair_color=('Blond','Brown')
 #scraper
 default_scraper=True
-scraper=scrapers['film_web'] #film_web
+default_scraper_var='film_web'
+scraper=scrapers[default_scraper_var] #film_web
