@@ -42,6 +42,17 @@ class AbstractScraperMovies(ABC):
                 raise TypeError('Invalid return value for field requrid '+var+' == '+type_var)
         raise TypeError('Invalid return value for field requrid ' + var + ' == NONE')
 
+    def check_stars_format(self,data):
+        for el in data:
+            if 'star_name' not in data[el]:
+                raise TypeError('invalid_format')
+
+    def get_stars(self,stars):
+        if stars:
+            self.check_stars_format(self.set_stars(stars))
+            return self.check_type('dict',self.set_stars(stars))
+        return {}
+
     def get_show_name(self):
         return self.check_type('str',self.set_show_name())
 
@@ -65,6 +76,10 @@ class AbstractScraperMovies(ABC):
         DV.set_data(data,False,elment,self.index)
         if(DV.is_valid()):
             return data
+
+    @abstractmethod
+    def set_stars(self,stars):
+        pass
 
     @abstractmethod
     def set_show_name(self):

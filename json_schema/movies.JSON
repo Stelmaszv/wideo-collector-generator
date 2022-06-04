@@ -4,5 +4,6 @@
   "date_relesed": "YEAR-MOUNT-DAY",
   "country" : "",
   "cover": "",
-  "poster": ""
+  "poster": "",
+  "tags"   : {}
 }

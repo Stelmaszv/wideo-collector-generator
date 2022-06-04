@@ -92,7 +92,7 @@ class MoviesScraperFactory(AbstractScraperFactory):
         data['country']      = self.MoviesScraper.get_country()
         data['poster']       = self.MoviesScraper.get_poster()
         data['cover']        = self.MoviesScraper.get_cover(data['cover'])
-        #data['stars']        = self.MoviesScraper.get_stars(data['stars'])
+        self.MoviesScraper.get_stars(db[self.index][self.element]['stars'])
         #data['tags']        = self.MoviesScraper.get_tags(data['tags'])
         if download_galery:
             self.MoviesScraper.galery()
