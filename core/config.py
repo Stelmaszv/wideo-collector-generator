@@ -224,17 +224,25 @@ class ConfigMovies(AbstractConfig):
         stars_dist.update(stars)
         return stars_dist
 
+    def find_cover(self,cover):
+        dir=os.listdir(db['series'][db[self.index][self.element]['series']]['dir']+'\\covers')
+        for photo in dir:
+            if cover==Path(photo).stem:
+                return db['series'][db[self.index][self.element]['series']]['dir']+'\\covers\\'+photo
+
     def on_config(self, data, index):
         data['cover']=self.get_img('cover',data['cover'])
         data['poster']=self.get_img('poster',data['poster'])
-
+        cover_srt=data['cover'].split(':')
+        if len(cover_srt)>0 and cover_srt[0]=="get":
+            cover=self.find_cover(cover_srt[1])
+            data['cover']=cover
 
         if os.path.exists(data['cover']) is False and data['cover']:
             print("Location for img defult is invalid "+data['cover'])
 
         if os.path.exists(data['poster']) is False and data['poster']:
             print("Location for img defult is invalid "+data['poster'])
-
 
         if "stars" in data:
             data['stars']  = self.add_stars(data['stars'],index['stars'])
@@ -244,6 +252,7 @@ class ConfigMovies(AbstractConfig):
 
         if self.valid_data(data['date_relesed']):
             pass
+
         return data
 
 class ConfigStarDir(AbstractDirConfig):
