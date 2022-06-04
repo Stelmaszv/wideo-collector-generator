@@ -29,28 +29,54 @@ class AbstractScraperMovies(ABC):
                 print('Downloading galery for '+self.index['name']+'  from ' + el)
                 handler.write(img_data)
 
+    def check_type(self,var,method):
+        method_var=method
+        type_var = type(method_var).__name__
+        if method_var!=None:
+            if type_var == var:
+                return  method_var
+            else:
+                raise TypeError('Invalid return value for field requrid '+var+' == '+type_var)
+        raise TypeError('Invalid return value for field requrid ' + var + ' == NONE')
+
+    def get_show_name(self):
+        return self.check_type('str',self.set_show_name())
+
+    def get_description(self):
+        return self.check_type('str',self.set_description())
+
+    def get_cover(self,cover):
+        if cover:
+            return self.check_type('str',self.set_cover())
+        return ''
+
+    def get_country(self):
+        return self.check_type('str', self.set_country())
+
+    def get_poster(self):
+        return self.check_type('str', self.set_poster())
 
     @abstractmethod
-    def set_show_name(self)->str:
+    def set_show_name(self):
         pass
 
     @abstractmethod
-    def description(self)->str:
+    def set_description(self):
         pass
 
-    def date_relesed(self)->str:
+    def date_relesed(self):
         return  'YEAR-MOUNT-DAY'
 
     @abstractmethod
-    def cover(self,cover)->str:
+    def set_cover(self):
         pass
 
     @abstractmethod
-    def country(self)->str:
+    def set_country(self):
         pass
 
     @abstractmethod
-    def poster(self)->str:
+    def set_poster(self):
         pass
 
     def galery(self):
