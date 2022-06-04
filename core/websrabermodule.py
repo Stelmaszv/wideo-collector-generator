@@ -88,7 +88,7 @@ class MoviesScraperFactory(AbstractScraperFactory):
     def start_scraping(self,data)->data:
         data['show_name']    = self.MoviesScraper.get_show_name()
         data['description']  = self.MoviesScraper.get_description()
-        #data['date_relesed'] = self.MoviesScraper.get_date_relesed()
+        data['date_relesed'] = self.MoviesScraper.get_date_relesed(db[self.index][self.element])
         data['country']      = self.MoviesScraper.get_country()
         data['poster']       = self.MoviesScraper.get_poster()
         data['cover']        = self.MoviesScraper.get_cover(data['cover'])

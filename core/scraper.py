@@ -6,6 +6,9 @@ import requests
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 import validators
+
+from core.helper import DataValid
+
 chrome = webdriver.Chrome(ChromeDriverManager().install())
 class AbstractScraperMovies(ABC):
 
@@ -56,6 +59,13 @@ class AbstractScraperMovies(ABC):
     def get_poster(self):
         return self.check_type('str', self.set_poster())
 
+    def get_date_relesed(self,elment):
+        data =self.set_date_relesed()
+        DV=DataValid()
+        DV.set_data(data,False,elment,self.index)
+        if(DV.is_valid()):
+            return data
+
     @abstractmethod
     def set_show_name(self):
         pass
@@ -64,7 +74,7 @@ class AbstractScraperMovies(ABC):
     def set_description(self):
         pass
 
-    def date_relesed(self):
+    def set_date_relesed(self):
         return  'YEAR-MOUNT-DAY'
 
     @abstractmethod
