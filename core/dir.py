@@ -174,8 +174,9 @@ class MovieElment(AbstractAddElment):
 
     def add_stars(self,stars):
         stars_dist={}
-        for star in stars:
-            stars_dist[star]={"star_name":star}
+        if stars is not None:
+            for star in stars:
+                    stars_dist[star]={"star_name":star}
         return stars_dist
 
     def add(self):
@@ -184,8 +185,9 @@ class MovieElment(AbstractAddElment):
         self.add_stars_in_movie_to_db(stars)
 
     def add_stars_in_movie_to_db(self,stars):
-        for star in stars:
-            StarElment(star).add()
+        if stars is not None:
+            for star in stars:
+                StarElment(star).add()
 
     def faind_stars(self, file):
         FS = FaindStar(file)
@@ -256,7 +258,8 @@ class ScanSerie(AbstractScanElement):
                             'series':self.name,
                             'src':self.dir + '\\' + self.scan_dir + '\\' + dir+'\\'+el_in_dir,
                             'config':str(False),
-                            'sezon':dir
+                            'sezon':dir,
+                            'tags' :{}
                         }
                         MovieElment(self.clear_name(el_in_dir),new_movie_dir).add()
         self.create_scraber_list(db['series'][self.name]['movies'])

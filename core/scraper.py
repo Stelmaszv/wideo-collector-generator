@@ -42,16 +42,64 @@ class AbstractScraperMovies(ABC):
                 raise TypeError('Invalid return value for field requrid '+var+' == '+type_var)
         raise TypeError('Invalid return value for field requrid ' + var + ' == NONE')
 
-    def check_stars_format(self,data):
+    def check_dist_format(self,data,index):
         for el in data:
-            if 'star_name' not in data[el]:
+            if index not in data[el]:
                 raise TypeError('invalid_format')
 
-    def get_stars(self,stars):
+    def add_stars(self,nstars,stars):
+        from core.dir import StarElment
+        stars_dist={}
+        for star in nstars:
+            stars_dist[star]={"star_name":star}
+            StarElment(star).add()
+        stars_dist.update(stars)
+        return stars_dist
+
+    def add_tags(self,add_tag,tags):
+        def valid_tags(tags):
+            valid_tags_return=[]
+            for tag in tags:
+                tag = tag.capitalize()
+                valid_tags_return.append(tag)
+            return valid_tags_return
+
+        tags_valid=valid_tags(add_tag)
+        tag_dist = {}
+        for tag in tags_valid:
+            tag_dist[tag] = {"tag_name": tag}
+        tags.update(tag_dist)
+        return tags
+
+    def get_stars_dict(self,stars):
         if stars:
-            self.check_stars_format(self.set_stars(stars))
-            return self.check_type('dict',self.set_stars(stars))
+            return self.add_stars(self.set_stars(), stars)
         return {}
+
+    def get_tags_dict(self,tags):
+        if len(tags) ==0:
+            return self.add_tags(self.set_tag(), tags)
+        return {}
+
+    def from_dist_to_list(self,dist):
+        list=[]
+        for el in dist:
+            list.append(el)
+        return list
+
+    def get_tags_list(self,tags):
+        if len(tags) ==0:
+            self.check_type('list',self.set_tag())
+            tags=self.from_dist_to_list(tags)
+            return tags.extend(self.set_tag())
+        return []
+
+    def get_stars_list(self,stars):
+        if len(stars) ==0:
+            self.check_type('list',self.set_stars())
+            stars = self.from_dist_to_list(stars)
+            return stars.extend(self.set_stars())
+        return []
 
     def get_show_name(self):
         return self.check_type('str',self.set_show_name())
@@ -78,7 +126,11 @@ class AbstractScraperMovies(ABC):
             return data
 
     @abstractmethod
-    def set_stars(self,stars):
+    def set_stars(self):
+        pass
+
+    @abstractmethod
+    def set_tag(self):
         pass
 
     @abstractmethod
