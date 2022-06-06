@@ -258,8 +258,8 @@ class ScanSerie(AbstractScanElement):
                             'series':self.name,
                             'src':self.dir + '\\' + self.scan_dir + '\\' + dir+'\\'+el_in_dir,
                             'config':str(False),
-                            'sezon':dir,
-                            'tags' :{}
+                            'season':dir,
+                            'tags' :{},
                         }
                         MovieElment(self.clear_name(el_in_dir),new_movie_dir).add()
         self.create_scraber_list(db['series'][self.name]['movies'])

@@ -88,14 +88,14 @@ class MoviesScraperFactory(AbstractScraperFactory):
             a_file.close()
 
     def start_scraping(self,data)->data:
-        data['show_name']                      = self.MoviesScraper.get_show_name()
-        data['description']                    = self.MoviesScraper.get_description()
-        data['date_relesed']                   = self.MoviesScraper.get_date_relesed(db[self.index][self.element])
-        data['country']                        = self.MoviesScraper.get_country()
-        data['poster']                         = self.MoviesScraper.get_poster()
-        data['cover']                          = self.MoviesScraper.get_cover(data['cover'])
-        data['stars'] = self.MoviesScraper.get_stars_dict(db[self.index][self.element]['stars'])
-        data['tags'] = self.MoviesScraper.get_tags_dict(db[self.index][self.element]['tags'])
+        data['show_name']    = self.MoviesScraper.get_show_name()
+        data['description']  = self.MoviesScraper.get_description()
+        data['date_relesed'] = self.MoviesScraper.get_date_relesed(db[self.index][self.element])
+        data['country']      = self.MoviesScraper.get_country()
+        data['poster']       = self.MoviesScraper.get_poster()
+        data['cover']        = self.MoviesScraper.get_cover(data['cover'])
+        data['stars']        = self.MoviesScraper.get_stars_dict(db[self.index][self.element]['stars'])
+        data['tags']         = self.MoviesScraper.get_tags_dict(db[self.index][self.element]['tags'])
         if download_galery:
             self.MoviesScraper.galery()
         return data

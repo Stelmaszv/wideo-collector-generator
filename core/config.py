@@ -41,7 +41,7 @@ class AbstractDirConfig(ABC):
 
 class AbstractConfig(ABC):
 
-    forbiten_fields=['name','dir','config','src','full_name','sezon']
+    forbiten_fields=['name','dir','config','src','full_name','season']
     fields = []
     photo_dir = 'photos'
     if_count_stars=False
@@ -119,9 +119,14 @@ class AbstractConfig(ABC):
                     db[self.index][self.element][el]=data[el]
                 else:
                     print('Warning ! Field '+el+' is invalid for '+self.index)
+
         os.remove("dist.json")
         a_file = open("dist.json", "w")
         json.dump(db, a_file)
+        a_file.close()
+
+        a_file = open(db[self.index][self.element]['dir']+"/config.JSON", "w")
+        json.dump(data, a_file)
         a_file.close()
 
 class ConfigStar(AbstractConfig):
@@ -235,14 +240,10 @@ class ConfigMovies(AbstractConfig):
         data['poster']=self.get_img('poster',data['poster'])
         cover_srt=data['cover'].split(':')
         if len(cover_srt)>0 and cover_srt[0]=="get":
-            cover=self.find_cover(cover_srt[1])
-            data['cover']=cover
+            data['cover']=self.find_cover(cover_srt[1])
 
-        if os.path.exists(data['cover']) is False and data['cover']:
-            print("Location for img defult is invalid "+data['cover'])
-
-        if os.path.exists(data['poster']) is False and data['poster']:
-            print("Location for img defult is invalid "+data['poster'])
+        if len(cover_srt) > 0 and cover_srt[0] == "getseason":
+            data['cover'] = self.find_cover('season_' + index['season'])
 
         if "stars" in data:
             data['stars']  = self.add_stars(data['stars'],index['stars'])
@@ -252,7 +253,6 @@ class ConfigMovies(AbstractConfig):
 
         if self.valid_data(data['date_relesed']):
             pass
-
         return data
 
 class ConfigStarDir(AbstractDirConfig):

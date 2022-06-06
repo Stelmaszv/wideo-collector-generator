@@ -14,6 +14,8 @@ class AbstractScraperMovies(ABC):
 
     url=''
     debug=False
+    cover=False
+
     def __init__(self,url,index):
         self.index=index
         self.url = url
@@ -99,9 +101,9 @@ class AbstractScraperMovies(ABC):
         return self.check_type('str',self.set_description())
 
     def get_cover(self,cover):
-        if cover:
-            return self.check_type('str',self.set_cover())
-        return ''
+        if self.cover:
+            return self.check_type('str', self.set_cover())
+        return cover
 
     def get_country(self):
         return self.check_type('str', self.set_country())
