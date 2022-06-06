@@ -4,6 +4,9 @@ import ast
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
+
+import setuptools.command.easy_install
+
 from core.settings import movie_ext
 
 with open('dist.json') as f:
@@ -176,7 +179,7 @@ class MovieElment(AbstractAddElment):
         stars_dist={}
         if stars is not None:
             for star in stars:
-                    stars_dist[star]={"star_name":star}
+                stars_dist[star]={"star_name":star}
         return stars_dist
 
     def add(self):
@@ -201,6 +204,7 @@ class AbstractScanElement(ABC,BasseScan):
     scan_dir= ''
     shema_url = ''
     ElmentFactory=MovieElment
+    index=''
 
     def __init__(self,dir):
         self.dir = dir
@@ -214,88 +218,76 @@ class AbstractScanElement(ABC,BasseScan):
         dir=self.dir.split('\\')
         return  dir[len(dir)-1]
 
-    @abstractmethod
     def scan(self):
+        dir_list = os.listdir(self.dir + '\\' + self.scan_dir);
+        db[self.index][self.name]['movies'] = {}
+        for dir in dir_list:
+            is_dir = os.path.isdir(self.dir + '\\' + self.scan_dir + '\\' + dir)
+            if is_dir:
+                dir_list_el = os.listdir(self.dir + '\\' + self.scan_dir + '\\' + dir + '')
+                for el_in_dir in dir_list_el:
+                    if el_in_dir.endswith(movie_ext):
+                        movie_dir = self.dir + '\\' + dir
+                        new_movie_dir = movie_dir.replace("series", "movies")
+                        db[self.index][self.name]['movies'][self.clear_name(el_in_dir)] = self.clear_name(el_in_dir)
+                        db['movies'][self.clear_name(el_in_dir)] = {
+                            'name': self.clear_name(el_in_dir),
+                            'full_name': el_in_dir,
+                            'dir': new_movie_dir,
+                            'series': self.name,
+                            'src': self.dir + '\\' + self.scan_dir + '\\' + dir + '\\' + el_in_dir,
+                            'config': str(False),
+                            'season': dir,
+                            'tags': {},
+                        }
+                        MovieElment(self.clear_name(el_in_dir), new_movie_dir).add()
+                        self.action_after_index(db[self.index][self.name])
+        self.create_scraber_list(db[self.index][self.name]['movies'])
+
+    def action_after_index(self,elment):
         pass
-
-    def add_to_db(self):
-        pass
-
-class ScanSerie(AbstractScanElement):
-
-    scan_dir = 'movies'
-    base_dir=['movies','photos','banners','stars','covers']
-    db_el=''
-    shema_url = 'json_schema/series.JSON'
 
     def create_scraber_list(self,list):
         elements={}
         for el in list:
             elements[el]=''
 
-        location=db['series'][self.name]['dir']+'/scraber_list.json';
+        location=db[self.index][self.name]['dir']+'/scraber_list.json';
         if os.path.exists(location) is False:
             a_file = open(location, "w")
             json.dump(elements, a_file)
             a_file.close()
 
-    def scan(self):
-        dir_list = os.listdir(self.dir + '\\' + self.scan_dir);
-        db['series'][self.name]['movies'] = {}
-        for dir in dir_list:
-            is_dir = os.path.isdir(self.dir + '\\' + self.scan_dir + '\\' + dir)
-            if is_dir:
-                dir_list_el = os.listdir(self.dir + '\\' + self.scan_dir + '\\' + dir+'')
-                for el_in_dir in dir_list_el:
-                    if el_in_dir.endswith(movie_ext):
-                        movie_dir=self.dir+'\\'+dir
-                        new_movie_dir=movie_dir.replace("series", "movies")
-                        db['series'][self.name]['movies'][self.clear_name(el_in_dir)]=self.clear_name(el_in_dir)
-                        db['movies'][self.clear_name(el_in_dir)]={
-                            'name':self.clear_name(el_in_dir),
-                            'full_name':el_in_dir,
-                            'dir':new_movie_dir,
-                            'series':self.name,
-                            'src':self.dir + '\\' + self.scan_dir + '\\' + dir+'\\'+el_in_dir,
-                            'config':str(False),
-                            'season':dir,
-                            'tags' :{},
-                        }
-                        MovieElment(self.clear_name(el_in_dir),new_movie_dir).add()
-        self.create_scraber_list(db['series'][self.name]['movies'])
-
     def add_to_db(self):
-        db['series'][self.name]={'name':self.name,'dir':self.dir,'config':str(False)}
-        self.db_el=db['series'][self.name]
+        db[self.index][self.name] = {'name': self.name, 'dir': self.dir, 'config': str(False)}
+        self.db_el = db[self.index][self.name]
 
-class ScanStar(AbstractScanElement):
-
-    base_dir = ['movies', 'photos']
-
-    def scan(self):
-        pass
-
-    def add_to_db(self):
-        db['stars'][self.name]={'name': self.name, 'config': str(False),'dir':self.dir}
-        self.db_el=db['stars'][self.name]
-
-
-class ScanProducent(AbstractScanElement):
+class ScanSerie(AbstractScanElement):
 
     scan_dir = 'movies'
+    index = 'series'
+    base_dir=['movies','photos','banners','stars','covers']
+    db_el=''
+    shema_url = 'json_schema/series.JSON'
+
+class ScanStar(ScanSerie):
+
+    index = 'stars'
+    base_dir = ['movies', 'photos']
+    shema_url = 'json_schema/star.JSON'
+
+    def add_stars(self,nstars,stars):
+        stars_dist={}
+        for star in nstars:
+            stars_dist[star]={"star_name":star}
+        stars_dist.update(stars)
+        return stars_dist
+
+class ScanProducent(ScanSerie):
+
     base_dir = ['movies', 'photos', 'banners', 'stars']
     shema_url = 'json_schema/producent.JSON'
-
-    def scan(self):
-        pass
-
-    def add_to_db(self):
-        db['producents'][self.name]={
-            'name': self.name,
-            'dir': self.dir,
-            'config': str(False)
-        }
-        self.db_el=db['producents'][self.name]
+    index = 'producents'
 
 class StarsDir(AbstractScan):
     FactoryScan = ScanStar
