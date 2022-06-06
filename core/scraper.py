@@ -63,23 +63,18 @@ class AbstractScraperMovies(ABC):
                 tag = tag.capitalize()
                 valid_tags_return.append(tag)
             return valid_tags_return
-
         tags_valid=valid_tags(add_tag)
         tag_dist = {}
         for tag in tags_valid:
             tag_dist[tag] = {"tag_name": tag}
         tags.update(tag_dist)
-        return tags
+        return {}
 
     def get_stars_dict(self,stars):
-        if stars:
-            return self.add_stars(self.set_stars(), stars)
-        return {}
+        return self.add_stars(self.set_stars(), stars)
 
     def get_tags_dict(self,tags):
-        if len(tags) ==0:
-            return self.add_tags(self.set_tag(), tags)
-        return {}
+        return self.add_tags(self.set_tag(), tags)
 
     def from_dist_to_list(self,dist):
         list=[]
@@ -88,18 +83,14 @@ class AbstractScraperMovies(ABC):
         return list
 
     def get_tags_list(self,tags):
-        if len(tags) ==0:
-            self.check_type('list',self.set_tag())
-            tags=self.from_dist_to_list(tags)
-            return tags.extend(self.set_tag())
-        return []
+        tags_array = self.from_dist_to_list(tags)
+        tags_array.extend(self.set_tag())
+        return tags_array
 
     def get_stars_list(self,stars):
-        if len(stars) ==0:
-            self.check_type('list',self.set_stars())
-            stars = self.from_dist_to_list(stars)
-            return stars.extend(self.set_stars())
-        return []
+        stars_array = self.from_dist_to_list(stars)
+        stars_array.extend(self.set_tag())
+        return stars_array
 
     def get_show_name(self):
         return self.check_type('str',self.set_show_name())

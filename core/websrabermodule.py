@@ -80,8 +80,8 @@ class MoviesScraperFactory(AbstractScraperFactory):
 
         if self.Scraper:
             self.start_scraping_main(data)
-            data['tags'] = self.MoviesScraper.get_stars_list(data['tags'])
-            data['stars'] = self.MoviesScraper.get_tags_list(data['stars'])
+            data['tags'] = self.MoviesScraper.get_tags_list(db[self.index][self.element]['tags'])
+            data['stars'] = self.MoviesScraper.get_stars_list(db[self.index][self.element]['stars'])
             os.remove(db[self.index][self.element]['dir'] + '\config.JSON')
             a_file = open(db[self.index][self.element]['dir'] + "\config.JSON", "x")
             json.dump(data, a_file)
@@ -94,8 +94,8 @@ class MoviesScraperFactory(AbstractScraperFactory):
         data['country']                        = self.MoviesScraper.get_country()
         data['poster']                         = self.MoviesScraper.get_poster()
         data['cover']                          = self.MoviesScraper.get_cover(data['cover'])
-        data['stars']                          = self.MoviesScraper.get_stars_dict(db[self.index][self.element]['stars'])
-        data['tags']                           = self.MoviesScraper.get_tags_dict(db[self.index][self.element]['tags'])
+        data['stars'] = self.MoviesScraper.get_stars_dict(db[self.index][self.element]['stars'])
+        data['tags'] = self.MoviesScraper.get_tags_dict(db[self.index][self.element]['tags'])
         if download_galery:
             self.MoviesScraper.galery()
         return data
