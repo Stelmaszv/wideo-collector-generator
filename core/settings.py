@@ -1,4 +1,4 @@
-from scrabers.scrapers import scrapers
+from scrabers.scrapers import scrapers,defult_stars_scraper as defult_stars_scraper_var
 error_type = False  #True for full mess
 settings_array = {
     "scan_dir": True,
@@ -14,3 +14,4 @@ default_scraper=True
 default_scraper_var='film_web'
 scraper=scrapers[default_scraper_var] #film_web
 download_galery=False
+defult_stars_scraper=defult_stars_scraper_var

@@ -2,7 +2,7 @@ import ast
 import json
 import os
 from abc import ABC,abstractmethod
-from core.settings import default_scraper, scrapers, scraper,download_galery
+from core.settings import default_scraper, scrapers, scraper,download_galery,defult_stars_scraper as DefultStarsScraper
 
 with open('dist.json') as f:
     data = f.read()
@@ -17,7 +17,7 @@ class WebScraperModule:
             "stars"  : StarsScraperDir
         }
         for dir in db:
-            if dir != "tags" and dir != 'producents' and dir != 'stars':
+            if dir != "tags" and dir != 'producents':
                 Scraper=dirs[dir](dir)
                 Scraper.start_scraper()
 
@@ -114,10 +114,29 @@ class SeriesScraperFactory(AbstractScraperFactory):
                 if self.Scraper.list_error:
                     self.start_scraping_main(data)
 
-class StartScraperFactory(AbstractScraperFactory):
+class StarsScraperFactory(AbstractScraperFactory):
 
     def on_scraper(self):
-        print('Stars')
+        with open(db[self.index][self.element]['dir'] + '/config.JSON') as f:
+
+            data = json.load(f)
+            if "scraper" in data:
+                self.Scraper = scrapers[data['scraper']]().StarsScraper
+            else:
+                self.Scraper = DefultStarsScraper
+
+        if self.Scraper:
+            self.StarsScraper = self.Scraper(data['url'], db[self.index][self.element])
+            self.start_scraping_main(data)
+            os.remove(db[self.index][self.element]['dir'] + '\config.JSON')
+            a_file = open(db[self.index][self.element]['dir'] + "\config.JSON", "x")
+            json.dump(data, a_file)
+            a_file.close()
+
+    def start_scraping(self,data)->data:
+        data['show_name']    = self.StarsScraper.set_show_name()
+        data['description']  = self.StarsScraper.set_description()
+        return data
 
 class AbstractDirScraper(ABC):
 
@@ -141,6 +160,6 @@ class SeriesScraperDir(AbstractDirScraper):
     scraper_mess = 'Scraping Series ... Start'
 
 class StarsScraperDir(AbstractDirScraper):
-    FactoryScraper = StartScraperFactory
+    FactoryScraper = StarsScraperFactory
     scraper_mess = 'Scraping Start ... Start'
 

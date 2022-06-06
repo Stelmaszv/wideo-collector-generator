@@ -133,7 +133,7 @@ class ConfigStar(AbstractConfig):
 
     fields     = ['show_name','avatar','tags','hair_color','description','weight',
                   'height','ethnicity','hair_color','birth_place','nationality',
-                  'date_of_birth','scraper']
+                  'date_of_birth','scraper','url']
     if_count_stars = False
 
     def on_config(self,data,index)->data:

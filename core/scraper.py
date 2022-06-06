@@ -10,29 +10,23 @@ import validators
 from core.helper import DataValid
 
 chrome = webdriver.Chrome(ChromeDriverManager().install())
-class AbstractScraperMovies(ABC):
+
+class AbstractScraper:
 
     url=''
     debug=False
     cover=False
+    place=''
 
     def __init__(self,url,index):
         self.index=index
         self.url = url
         self.chrome=chrome
         if validators.url(self.url):
-            print('Scraping Movie ... ' + self.index['name'])
+            print('Scraping '+self.place+' ... ' + self.index['name'])
             self.chrome.get(self.url)
         if self.debug:
             print(self.url)
-
-    def save_in_galery(self,photos):
-        for el in photos:
-            name = el.split('/')[len(el.split('/')) - 1]
-            img_data = requests.get(el).content
-            with open(self.index['dir']+'/' + name, 'wb') as handler:
-                print('Downloading galery for '+self.index['name']+'  from ' + el)
-                handler.write(img_data)
 
     def check_type(self,var,method):
         method_var=method
@@ -48,6 +42,35 @@ class AbstractScraperMovies(ABC):
         for el in data:
             if index not in data[el]:
                 raise TypeError('invalid_format')
+
+    def from_dist_to_list(self,dist):
+        list=[]
+        for el in dist:
+            list.append(el)
+        return list
+
+    @abstractmethod
+    def set_show_name(self):
+        pass
+
+    @abstractmethod
+    def set_description(self):
+        pass
+
+    def galery(self):
+        pass
+
+class AbstractScraperMovies(AbstractScraper):
+
+    place = 'movies'
+
+    def save_in_galery(self,photos):
+        for el in photos:
+            name = el.split('/')[len(el.split('/')) - 1]
+            img_data = requests.get(el).content
+            with open(self.index['dir']+'/' + name, 'wb') as handler:
+                print('Downloading galery for '+self.index['name']+'  from ' + el)
+                handler.write(img_data)
 
     def add_stars(self,nstars,stars):
         from core.dir import StarElment
@@ -77,12 +100,6 @@ class AbstractScraperMovies(ABC):
 
     def get_tags_dict(self,tags):
         return self.add_tags(self.set_tag(), tags)
-
-    def from_dist_to_list(self,dist):
-        list=[]
-        for el in dist:
-            list.append(el)
-        return list
 
     def get_tags_list(self,tags):
         tags_array = self.from_dist_to_list(tags)
@@ -126,16 +143,8 @@ class AbstractScraperMovies(ABC):
     def set_tag(self):
         pass
 
-    @abstractmethod
-    def set_show_name(self):
-        pass
-
-    @abstractmethod
-    def set_description(self):
-        pass
-
     def set_date_relesed(self):
-        return  'YEAR-MOUNT-DAY'
+        return 'YEAR-MOUNT-DAY'
 
     @abstractmethod
     def set_cover(self):
@@ -149,11 +158,17 @@ class AbstractScraperMovies(ABC):
     def set_poster(self):
         pass
 
-    def galery(self):
-        pass
 
 class AbstractScraperMoviesList(AbstractScraperMovies):
     type = 'list'
+
+class AbstractScraperStarsUrl(AbstractScraper):
+    type = 'url'
+    place = 'stars'
+
+class AbstractScraperSeriesUrl(AbstractScraper):
+    type = 'url'
+    place = 'stars'
 
 class AbstractScraperSeriesList(ABC):
 
