@@ -275,6 +275,11 @@ class ScanStar(AbstractScanElement):
     def scan(self):
         pass
 
+    def add_to_db(self):
+        db['stars'][self.name]={'name': self.name, 'config': str(False),'dir':self.dir}
+        self.db_el=db['stars'][self.name]
+
+
 class ScanProducent(AbstractScanElement):
 
     scan_dir = 'movies'
@@ -282,11 +287,15 @@ class ScanProducent(AbstractScanElement):
     shema_url = 'json_schema/producent.JSON'
 
     def scan(self):
+        pass
+
+    def add_to_db(self):
         db['producents'][self.name]={
             'name': self.name,
             'dir': self.dir,
             'config': str(False)
         }
+        self.db_el=db['producents'][self.name]
 
 class StarsDir(AbstractScan):
     FactoryScan = ScanStar
