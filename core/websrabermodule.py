@@ -138,6 +138,13 @@ class StarsScraperFactory(AbstractScraperFactory):
         data['show_name']    = self.StarsScraper.get_show_name()
         data['description']  = self.StarsScraper.get_description()
         data['birth_place']  = self.StarsScraper.get_birth_place()
+        data['nationality']  = self.StarsScraper.get_nationality()
+        data['weight']       = self.StarsScraper.get_weight()
+        data['height']       = self.StarsScraper.get_height()
+        data['ethnicity'] = self.StarsScraper.get_ethnicity()
+        data['hair_color'] = self.StarsScraper.get_hair_color()
+        data['date_of_birth'] = self.StarsScraper.get_date_of_birth(db[self.index][self.element])
+        data['avatar'] = self.StarsScraper.get_avatar()
         return data
 
 class AbstractDirScraper(ABC):

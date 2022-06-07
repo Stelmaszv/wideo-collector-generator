@@ -185,8 +185,61 @@ class AbstractScraperStarsUrl(AbstractScraper):
     def get_birth_place(self):
         return self.check_type('str', self.set_birth_place())
 
+    def get_nationality(self):
+        return self.check_type('str', self.set_nationality())
+
+    def get_weight(self):
+        return self.check_type('int', self.set_weight())
+
+    def get_height(self):
+        return self.check_type('int', self.set_height())
+
+    def get_ethnicity(self):
+        return self.check_type('str', self.set_ethnicity())
+
+    def get_hair_color(self):
+        return self.check_type('str', self.set_hair_color())
+
+    def get_date_of_birth(self,elment):
+        data = self.set_date_of_birth()
+        DV = DataValid()
+        DV.set_data(data, False, elment, self.index)
+        if (DV.is_valid()):
+            return data
+
+    def get_avatar(self):
+        return self.check_type('str', self.set_avatar())
+
+    @abstractmethod
+    def set_date_of_birth(self):
+        pass
+
     @abstractmethod
     def set_birth_place(self):
+        pass
+
+    @abstractmethod
+    def set_nationality(self):
+        pass
+
+    @abstractmethod
+    def set_weight(self):
+        pass
+
+    @abstractmethod
+    def set_height(self):
+        pass
+
+    @abstractmethod
+    def set_ethnicity(self):
+        pass
+
+    @abstractmethod
+    def set_avatar(self):
+        pass
+
+    @abstractmethod
+    def set_hair_color(self):
         pass
 
 class AbstractScraperSeriesUrl(AbstractScraper):
