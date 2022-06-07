@@ -67,6 +67,7 @@ class MoviesScraperFactory(AbstractScraperFactory):
                 else:
                     if default_scraper is True:
                         self.Scraper = scraper()
+
             if self.Scraper:
                 self.MoviesScraper = self.Scraper.MoviesScraper
                 type = self.MoviesScraper.type
@@ -121,7 +122,7 @@ class StarsScraperFactory(AbstractScraperFactory):
 
             data = json.load(f)
             if "scraper" in data:
-                self.Scraper = scrapers[data['scraper']]().StarsScraper
+                self.Scraper = scrapers[data['scraper']](db[self.index][self.element]).StarsScraper
             else:
                 self.Scraper = DefultStarsScraper
 

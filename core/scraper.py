@@ -49,6 +49,24 @@ class AbstractScraper:
             list.append(el)
         return list
 
+    def convert_MOUNT_str_to_number(self,mount):
+        mounts={
+            "January"    :1,
+            "February"   :2,
+            "March"      :3,
+            "April"      :4,
+            "May"        :5,
+            "June"       :6,
+            "July"       :7,
+            "August"     :8,
+            "September"  :9,
+            "October"    :10,
+            "November"   :11,
+            "December"   :12
+
+        }
+        return mounts[mount]
+
     @abstractmethod
     def set_show_name(self):
         pass
@@ -108,7 +126,7 @@ class AbstractScraperMovies(AbstractScraper):
 
     def get_stars_list(self,stars):
         stars_array = self.from_dist_to_list(stars)
-        stars_array.extend(self.set_tag())
+        stars_array.extend(self.set_stars())
         return stars_array
 
     def get_show_name(self):
@@ -168,7 +186,7 @@ class AbstractScraperStarsUrl(AbstractScraper):
 
 class AbstractScraperSeriesUrl(AbstractScraper):
     type = 'url'
-    place = 'stars'
+    place = 'series'
 
 class AbstractScraperSeriesList(ABC):
 
