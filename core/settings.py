@@ -12,6 +12,6 @@ hair_color=('Blond','Brown')
 #scraper
 default_scraper=True
 default_scraper_var='imdb'
-scraper=scrapers[default_scraper_var] #film_web
-download_galery=True
+scraper=scrapers[default_scraper_var] #imdb
+download_galery=False
 defult_stars_scraper=defult_stars_scraper_var

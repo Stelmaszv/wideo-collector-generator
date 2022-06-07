@@ -135,8 +135,9 @@ class StarsScraperFactory(AbstractScraperFactory):
             a_file.close()
 
     def start_scraping(self,data)->data:
-        data['show_name']    = self.StarsScraper.set_show_name()
-        data['description']  = self.StarsScraper.set_description()
+        data['show_name']    = self.StarsScraper.get_show_name()
+        data['description']  = self.StarsScraper.get_description()
+        data['birth_place']  = self.StarsScraper.get_birth_place()
         return data
 
 class AbstractDirScraper(ABC):
