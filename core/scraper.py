@@ -1,14 +1,12 @@
 import json
 import os
-import time
 from abc import ABC,abstractmethod
 
 import requests
-from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
+import selenium
 import validators
-
 from core.helper import DataValid
+
 
 
 class AbstractScraper:
@@ -19,14 +17,22 @@ class AbstractScraper:
     place=''
 
     def __init__(self,url,index):
+
         self.index=index
         self.url = url
-        self.chrome=webdriver.Chrome(ChromeDriverManager().install())
+        from core.settings import chrome
+        self.chrome=chrome
         if validators.url(self.url):
             print('Scraping '+self.place+' ... ' + self.index['name'])
-            self.chrome.get(self.url)
+            self.get_url()
         if self.debug:
             print(self.url)
+
+    def get_url(self):
+        try:
+            self.chrome.get(self.url)
+        except selenium.common.exceptions.WebDriverException:
+            print('error')
 
     def check_type(self,var,method):
         method_var=method
@@ -88,9 +94,16 @@ class AbstractScraperMovies(AbstractScraper):
     place = 'movies'
 
     def save_in_galery(self,photos):
+        def get_url():
+            try:
+                img_data = requests.get(el).content
+            except selenium.common.exceptions.WebDriverException:
+                img_data=get_url()
+            return img_data
+
         for el in photos:
             name = el.split('/')[len(el.split('/')) - 1]
-            img_data = requests.get(el).content
+            img_data=get_url()
             with open(self.index['dir']+'/' + name, 'wb') as handler:
                 print('Downloading galery for '+self.index['name']+'  from ' + el)
                 handler.write(img_data)
