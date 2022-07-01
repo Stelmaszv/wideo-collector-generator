@@ -23,6 +23,7 @@ else:
 from core.dir import ScanDirs
 from core.config import ConfigModule
 from core.websrabermodule import WebScraperModule
+
 moduls = [
     {
         "obj": ScanDirs(data_json_dirs), "method": 'start',

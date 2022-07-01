@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from abc import ABC,abstractmethod
 
 import requests
@@ -9,7 +10,6 @@ import validators
 
 from core.helper import DataValid
 
-chrome = webdriver.Chrome(ChromeDriverManager().install())
 
 class AbstractScraper:
 
@@ -21,7 +21,7 @@ class AbstractScraper:
     def __init__(self,url,index):
         self.index=index
         self.url = url
-        self.chrome=chrome
+        self.chrome=webdriver.Chrome(ChromeDriverManager().install())
         if validators.url(self.url):
             print('Scraping '+self.place+' ... ' + self.index['name'])
             self.chrome.get(self.url)

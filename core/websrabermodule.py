@@ -2,7 +2,7 @@ import ast
 import json
 import os
 from abc import ABC,abstractmethod
-from core.settings import default_scraper, scrapers, scraper,download_galery,defult_stars_scraper as DefultStarsScraper
+from core.settings import default_scraper, scrapers, scraper,download_galery
 
 with open('dist.json') as f:
     data = f.read()
@@ -118,6 +118,7 @@ class SeriesScraperFactory(AbstractScraperFactory):
 class StarsScraperFactory(AbstractScraperFactory):
 
     def on_scraper(self):
+        """
         with open(db[self.index][self.element]['dir'] + '/config.JSON') as f:
 
             data = json.load(f)
@@ -133,6 +134,8 @@ class StarsScraperFactory(AbstractScraperFactory):
             a_file = open(db[self.index][self.element]['dir'] + "\config.JSON", "x")
             json.dump(data, a_file)
             a_file.close()
+        """
+        pass
 
     def start_scraping(self,data)->data:
         data['show_name']    = self.StarsScraper.get_show_name()
