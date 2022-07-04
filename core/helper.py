@@ -41,7 +41,6 @@ class DataValid:
 
     def valid_day(self,day):
         if self.exep(day,'Day'):
-            print(self.valid_year_var,self.valid_mount_var,day)
             try:
                 if self.valid_year_var is not None and self.valid_mount_var:
                     date = datetime.datetime(int(self.valid_year_var), int(self.valid_mount_var), int(day))

@@ -14,9 +14,6 @@ with open('dist.json') as f:
 
 class ConfigModule:
 
-    def __int__(self):
-        print('init')
-
     def start(self):
         config_dirs= {
             "series"  :ConfigSeriesDir,
@@ -44,7 +41,7 @@ class AbstractDirConfig(ABC):
 
 class AbstractConfig(ABC):
 
-    forbiten_fields=['name','dir','config','src','full_name','sezon']
+    forbiten_fields=['name','dir','config','src','full_name','season']
     fields = []
     photo_dir = 'photos'
     if_count_stars=False
@@ -58,8 +55,6 @@ class AbstractConfig(ABC):
         for photo in os.listdir(photo_list):
             if name==Path(photo).stem:
                 return db[self.index][self.element]['dir']+'\\'+self.photo_dir+'\\'+photo
-        if os.path.exists(defult) is False and defult:
-            print("Location for img defult is invalid "+defult)
         return defult
 
     def on_config(self,data,index)->data:
@@ -124,15 +119,21 @@ class AbstractConfig(ABC):
                     db[self.index][self.element][el]=data[el]
                 else:
                     print('Warning ! Field '+el+' is invalid for '+self.index)
+
+        os.remove("dist.json")
         a_file = open("dist.json", "w")
         json.dump(db, a_file)
+        a_file.close()
+
+        a_file = open(db[self.index][self.element]['dir']+"/config.JSON", "w")
+        json.dump(data, a_file)
         a_file.close()
 
 class ConfigStar(AbstractConfig):
 
     fields     = ['show_name','avatar','tags','hair_color','description','weight',
                   'height','ethnicity','hair_color','birth_place','nationality',
-                  'date_of_birth']
+                  'date_of_birth','scraper','url']
     if_count_stars = False
 
     def on_config(self,data,index)->data:
@@ -155,13 +156,12 @@ class ConfigStar(AbstractConfig):
 
         if self.valid_data(data['date_of_birth'],True):
             pass
-        print(data)
         return data
 
 class ConfigSeries(AbstractConfig):
 
     fields = ['show_name','producent','tags','avatar','number_of_sezons',
-              'description','country','years']
+              'description','country','years','scraper']
     if_count_stars = True
 
     def add_producent(self,producent):
@@ -192,7 +192,7 @@ class ConfigSeries(AbstractConfig):
 
 class ConfigProducents(AbstractConfig):
 
-    fields = ['show_name','series','tags','description','country','avatar']
+    fields = ['show_name','series','tags','description','country','avatar','scraper']
     if_count_stars = True
 
     def add_series(self,series):
@@ -218,7 +218,7 @@ class ConfigProducents(AbstractConfig):
 class ConfigMovies(AbstractConfig):
 
     fields = ['show_name','poster','cover','stars','tags','description',
-              'country','date_relesed']
+              'country','date_relesed','scraper']
     photo_dir = ''
 
     def add_stars(self,nstars,stars):
@@ -229,9 +229,21 @@ class ConfigMovies(AbstractConfig):
         stars_dist.update(stars)
         return stars_dist
 
+    def find_cover(self,cover):
+        dir=os.listdir(db['series'][db[self.index][self.element]['series']]['dir']+'\\covers')
+        for photo in dir:
+            if cover==Path(photo).stem:
+                return db['series'][db[self.index][self.element]['series']]['dir']+'\\covers\\'+photo
+
     def on_config(self, data, index):
         data['cover']=self.get_img('cover',data['cover'])
         data['poster']=self.get_img('poster',data['poster'])
+        cover_srt=data['cover'].split(':')
+        if len(cover_srt)>0 and cover_srt[0]=="get":
+            data['cover']=self.find_cover(cover_srt[1])
+
+        if len(cover_srt) > 0 and cover_srt[0] == "getseason":
+            data['cover'] = self.find_cover('season_' + index['season'])
 
         if "stars" in data:
             data['stars']  = self.add_stars(data['stars'],index['stars'])

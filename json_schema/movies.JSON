@@ -3,6 +3,8 @@
   "description": "",
   "date_relesed": "YEAR-MOUNT-DAY",
   "country" : "",
-  "cover": "",
-  "poster" : ""
+  "cover": "getsezon:0",
+  "poster": "",
+  "tags"  : [],
+  "stars" : []
 }
