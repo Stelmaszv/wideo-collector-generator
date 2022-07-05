@@ -9,9 +9,10 @@ import setuptools.command.easy_install
 
 from core.settings import movie_ext
 
-with open('dist.json') as f:
-    data = f.read()
-    db = ast.literal_eval(data)
+if Path('dist.json').is_file():
+    with open('dist.json') as f:
+        data = f.read()
+        db = ast.literal_eval(data)
 
 class FaindStar:
 
