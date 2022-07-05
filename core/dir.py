@@ -3,6 +3,7 @@ import json
 import ast
 import re
 from abc import ABC, abstractmethod
+from os.path import exists
 from pathlib import Path
 
 import setuptools.command.easy_install
@@ -82,6 +83,8 @@ class AbstractScan(ABC):
                 os.mkdir(self.dir+'\\'+dir)
 
 class BasseScan:
+    shema_url=''
+    base_dir=[]
 
     def base_init(self,name,dir):
         self.name = name
@@ -89,15 +92,20 @@ class BasseScan:
         self.dir = dir + '\\' + self.name
 
     def create_json_config(self):
-        if Path(self.dir + '\\config.json').is_file() is False:
+        if exists(self.dir + '\\config.json') is False:
             f = open(self.dir + '\\config.json', "x")
             f.write(Path(self.shema_url).read_text())
             f.close()
+            return True
+        return False
 
+    """
     def convert(self,a):
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         it = iter(a)
         res_dct = dict(zip(it, it))
         return res_dct
+    """
 
     def clear_name(self,name):
         str = ''
