@@ -147,6 +147,7 @@ class AbstractAddElment(ABC,BasseScan):
     shema_url = 'json_schema/movies.JSON'
 
     def __init__(self,name,dir=''):
+        print(name,dir)
         self.base_init(name,dir)
         self.create_dir()
 
@@ -165,12 +166,17 @@ class StarElment(AbstractAddElment):
     base_dir = ['movies', 'photos']
     shema_url = 'json_schema/star.JSON'
 
-    def __init__(self, name, dir=''):
+    def __init__(self, name, dir='',test_db={}):
+        self.test_db=test_db
         self.base_init(name,dir)
         self.create_dir()
         self.create_json_config()
         self.init_dir()
-        db['stars'][name] = {'name': name, 'config': str(False),'dir':self.dir}
+        try:
+            db['stars'][name] = {'name': name, 'config': str(False),'dir':self.dir}
+        except:
+            self.test_db['stars'][name] = {'name': name, 'config': str(False), 'dir': self.dir}
+
 
     def create_dir(self):
         self.dir=self.set_dir(self.name,'stars')

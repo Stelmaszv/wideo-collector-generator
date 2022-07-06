@@ -1,6 +1,8 @@
+import ast
 import json
 import os
 import shutil
+from os.path import exists
 from pathlib import Path
 
 class CollectorInnit:
@@ -30,20 +32,34 @@ class CollectorInnit:
 class CollectorEnvConfig:
 
     def data_config(self):
-        f = open('data.json', "x")
-        f.write(Path('data_test_shema.JSON').read_text())
-        f.close()
+        if exists('data.json') is False:
+            f = open('data.json', "x")
+            f.write(Path('data_test_shema.JSON').read_text())
+            f.close()
 
     def dist_create(self):
-        f = open('dist.json', "x")
-        f.write(json.dumps('{}'))
-        f.close()
+        if exists('dist.json') is False:
+            f = open('dist.json', "x")
+            f.write(Path('dist_test_shema.json').read_text())
+            f.close()
 
     def remove_config(self):
         os.remove('data.json')
 
     def remove_dist(self):
         os.remove('dist.json')
+
+class CollectorDist:
+
+    def get_dist(self):
+        db={}
+        if Path('dist.json').is_file():
+            with open('dist.json') as f:
+                data = f.read()
+                db = ast.literal_eval(data)
+        return db
+
+
 
 
 

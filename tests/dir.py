@@ -1,8 +1,8 @@
+import ast
 import os
 from unittest import TestCase
-from core.dir import FaindStar, BasseScan
-from tests.collector_test_hellper import CollectorEnvConfig, CollectorInnit
-
+from core.dir import FaindStar, BasseScan, StarElment
+from tests.collector_test_hellper import CollectorEnvConfig, CollectorInnit, CollectorDist
 
 class TestFaindStarGood(TestCase):
 
@@ -89,6 +89,25 @@ class TestBasseScan(TestCase):
         self.assertEqual(len(os.listdir(self.BS.dir)), 2)
         self.assertEqual(os.path.isdir(self.BS.dir+'/movies'), True)
         self.assertEqual(os.path.isdir(self.BS.dir+'/photo'), True)
+        self.CI.delete_collector_dir()
+
+class TestAbstractAddElment(TestCase):
+    test_dir = 'A-D\Dual\\1'
+
+    def setUp(self):
+
+        self.CI = CollectorInnit()
+        self.CDC = CollectorEnvConfig()
+        self.CDC.data_config()
+        self.CDC.dist_create()
+        with open('dist.json') as f:
+            data = f.read()
+            db = ast.literal_eval(data)
+        self.BS = StarElment("Name", self.test_dir,db)
+
+    def test_create_json_config_not_create(self):
+        self.CI.add_star_dir(self.test_dir + "\\Name")
+        self.assertEqual(self.BS.create_json_config(), False)
         self.CI.delete_collector_dir()
 
 

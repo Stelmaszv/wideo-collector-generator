@@ -95,7 +95,7 @@ class LoopRun:
             self.run_object(object['obj'], object['method'], object['stan'], object['start_mes'], object['end_mees'])
 
 class CreateDist():
-    shema_url = 'json_schema/dist.JSON'
+    shema_url = 'json_schema\\dist.JSON'
     def __init__(self):
         if exists('dist.json') is False:
             f = open('dist.json', "x")
