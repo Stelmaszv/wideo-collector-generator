@@ -161,6 +161,9 @@ class AbstractAddElment(ABC,BasseScan):
     def add(self):
         pass
 
+    def return_test_db(self):
+        return self.test_db
+
 class StarElment(AbstractAddElment):
 
     base_dir = ['movies', 'photos']
@@ -174,6 +177,7 @@ class StarElment(AbstractAddElment):
         self.init_dir()
         try:
             db['stars'][name] = {'name': name, 'config': str(False),'dir':self.dir}
+            self.test_db=db
         except:
             self.test_db['stars'][name] = {'name': name, 'config': str(False), 'dir': self.dir}
 

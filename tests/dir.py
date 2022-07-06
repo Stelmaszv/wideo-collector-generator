@@ -112,7 +112,6 @@ class TestAbstractAddElment(TestCase):
 
 class TestStarElment(TestCase):
 
-
     test_dir = 'A-D\Dual\\1'
 
     def setUp(self):
@@ -120,12 +119,12 @@ class TestStarElment(TestCase):
         self.CDC = CollectorEnvConfig()
         self.CDC.data_config()
         self.CDC.dist_create()
+
+    def test_init_dir(self):
         with open('dist.json') as f:
             data = f.read()
             db = ast.literal_eval(data)
         self.BS = StarElment("Name", self.test_dir, db)
-
-    def test_init_dir(self):
         dir = self.CI.add_star_dir(self.test_dir + "\\Name")
         self.BS.dir=dir
         self.BS.init_dir()
@@ -133,6 +132,16 @@ class TestStarElment(TestCase):
         self.assertEqual(os.path.isdir(self.BS.dir+'/movies'), True)
         self.assertEqual(os.path.isdir(self.BS.dir+'/photos'), True)
         self.CI.delete_collector_dir()
+
+    def test_star_add_db(self):
+        with open('dist.json') as f:
+            data = f.read()
+            db = ast.literal_eval(data)
+        self.BS = StarElment("Name", self.test_dir, db)
+        self.assertEqual('Name' in self.BS.return_test_db()['stars'], True)
+
+
+
 
 
 
