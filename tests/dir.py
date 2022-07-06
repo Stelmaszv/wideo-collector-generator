@@ -110,6 +110,29 @@ class TestAbstractAddElment(TestCase):
         self.assertEqual(self.BS.create_json_config(), False)
         self.CI.delete_collector_dir()
 
+class TestStarElment(TestCase):
+
+
+    test_dir = 'A-D\Dual\\1'
+
+    def setUp(self):
+        self.CI = CollectorInnit()
+        self.CDC = CollectorEnvConfig()
+        self.CDC.data_config()
+        self.CDC.dist_create()
+        with open('dist.json') as f:
+            data = f.read()
+            db = ast.literal_eval(data)
+        self.BS = StarElment("Name", self.test_dir, db)
+
+    def test_init_dir(self):
+        dir = self.CI.add_star_dir(self.test_dir + "\\Name")
+        self.BS.dir=dir
+        self.BS.init_dir()
+        self.assertEqual(len(os.listdir(self.BS.dir)), 2)
+        self.assertEqual(os.path.isdir(self.BS.dir+'/movies'), True)
+        self.assertEqual(os.path.isdir(self.BS.dir+'/photos'), True)
+        self.CI.delete_collector_dir()
 
 
 

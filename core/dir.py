@@ -177,7 +177,6 @@ class StarElment(AbstractAddElment):
         except:
             self.test_db['stars'][name] = {'name': name, 'config': str(False), 'dir': self.dir}
 
-
     def create_dir(self):
         self.dir=self.set_dir(self.name,'stars')
         if os.path.isdir(self.dir) is False:
