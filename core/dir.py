@@ -85,11 +85,15 @@ class AbstractScan(ABC):
 class BasseScan:
     shema_url=''
     base_dir=[]
+    wrong_string=["'"," "]
 
     def base_init(self,name,dir):
         self.name = name
         print('Adding ... ' + self.name + '')
         self.dir = dir + '\\' + self.name
+
+    def escepe_string(self,name):
+        return name.replace(' ','-')
 
     def create_json_config(self):
         if exists(self.dir + '\\config.json') is False:
@@ -152,6 +156,7 @@ class AbstractAddElment(ABC,BasseScan):
         self.create_dir()
 
     def create_dir(self):
+        print(os.path.isdir(self.dir))
         if os.path.isdir(self.dir) is False:
             os.makedirs(self.dir)
         db['movies'][self.name]['dir'] = self.dir
@@ -200,6 +205,9 @@ class MovieElment(AbstractAddElment):
                 stars_dist[star]={"star_name":star}
         return stars_dist
 
+    def get_dir(self):
+        return self.dir;
+
     def add(self):
         stars = self.faind_stars(db['movies'][self.name]['full_name'])
         db['movies'][self.name]['stars'] = self.add_stars(stars)
@@ -235,7 +243,6 @@ class AbstractScanElement(ABC,BasseScan):
     def get_name(self):
         dir=self.dir.split('\\')
         return  dir[len(dir)-1]
-
     def scan(self):
         dir_list = os.listdir(self.dir + '\\' + self.scan_dir);
         db[self.index][self.name]['movies'] = {}
@@ -245,6 +252,7 @@ class AbstractScanElement(ABC,BasseScan):
                 dir_list_el = os.listdir(self.dir + '\\' + self.scan_dir + '\\' + dir + '')
                 for el_in_dir in dir_list_el:
                     if el_in_dir.endswith(movie_ext):
+
                         movie_dir = self.dir + '\\' + dir
                         new_movie_dir = movie_dir.replace("series", "movies")
                         db[self.index][self.name]['movies'][self.clear_name(el_in_dir)] = self.clear_name(el_in_dir)
@@ -253,7 +261,7 @@ class AbstractScanElement(ABC,BasseScan):
                             'full_name': el_in_dir,
                             'dir': new_movie_dir,
                             'series': self.name,
-                            'src': self.dir + '\\' + self.scan_dir + '\\' + dir + '\\' + el_in_dir,
+                            'src': self.dir + '\\' + self.scan_dir + '\\' + dir + '\\' + self.clear_name(el_in_dir),
                             'config': str(False),
                             'season': dir,
                             'tags': {},

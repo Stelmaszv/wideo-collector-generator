@@ -109,7 +109,6 @@ class AbstractConfig(ABC):
             return DV.is_valid()
 
     def config(self):
-        print('Config ... '+self.element)
         with open(db[self.index][self.element]['dir']+'/config.JSON') as f:
             data = json.load(f)
             data = self.on_config(data,db[self.index][self.element])

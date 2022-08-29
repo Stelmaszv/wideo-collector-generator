@@ -3,6 +3,7 @@ from json import JSONDecodeError
 from core.init import ValidJson,LoopRun,CreateDist
 from core.settings import settings_array
 from pathlib import Path
+import uuid
 CreateDist()
 data_json_dirs={}
 print("Validate data.JSON file ... Start")
@@ -40,7 +41,13 @@ moduls = [
         "stan": settings_array["scraper"], "start_mes": 'WebSraber ... Start', "end_mees": 'End of WebSraber ... ok',
     }
 ]
+def my_random_string(string_length=10):
+    random = str(uuid.uuid4()) # Convert UUID format to a Python string.
+    random = random.upper() # Make all characters uppercase.
+    random = random.replace("-","") # Remove the UUID '-'.
+    return random[0:string_length] # Return the random string.
 
 if __name__=="__main__":
     LR = LoopRun(moduls)
     LR.loop()
+    #print(my_random_string(200))

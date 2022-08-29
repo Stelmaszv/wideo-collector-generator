@@ -52,41 +52,44 @@ class AbstractScraperFactory(ABC):
 class MoviesScraperFactory(AbstractScraperFactory):
 
     def on_scraper(self):
-        with open(db[self.index][self.element]['dir'] + '/config.JSON') as f:
-            data = json.load(f)
-            series_name = db[self.index][self.element]['series']
-            series_index = db['series'][series_name]
+        try:
+            with open(db[self.index][self.element]['dir'] + '/config.JSON') as f:
+                data = json.load(f)
+                series_name = db[self.index][self.element]['series']
+                series_index = db['series'][series_name]
 
-            self.Scraper = None
+                self.Scraper = None
 
-            if "scraper" in data:
-                self.Scraper = scrapers[data['scraper']]()
-            else:
-                if "scraper" in  series_index:
-                    self.Scraper = scrapers[series_index["scraper"]]()
+                if "scraper" in data:
+                    self.Scraper = scrapers[data['scraper']]()
                 else:
-                    if default_scraper is True:
-                        self.Scraper = scraper()
+                    if "scraper" in  series_index:
+                        self.Scraper = scrapers[series_index["scraper"]]()
+                    else:
+                        if default_scraper is True:
+                            self.Scraper = scraper()
+
+                if self.Scraper:
+                    self.MoviesScraper = self.Scraper.MoviesScraper
+                    type = self.MoviesScraper.type
+                    if type == 'list':
+                        series_name = db[self.index][self.element]['series']
+                        series_index = db['series'][series_name]
+                        series_scraper = self.Scraper.SeriesScraper(series_index)
+                        if series_scraper.list_error:
+                            url = series_scraper.faind(db[self.index][self.element]['name'])
+                            self.MoviesScraper = self.MoviesScraper(url, db[self.index][self.element])
 
             if self.Scraper:
-                self.MoviesScraper = self.Scraper.MoviesScraper
-                type = self.MoviesScraper.type
-                if type == 'list':
-                    series_name = db[self.index][self.element]['series']
-                    series_index = db['series'][series_name]
-                    series_scraper = self.Scraper.SeriesScraper(series_index)
-                    if series_scraper.list_error:
-                        url = series_scraper.faind(db[self.index][self.element]['name'])
-                        self.MoviesScraper = self.MoviesScraper(url, db[self.index][self.element])
-
-        if self.Scraper:
-            self.start_scraping_main(data)
-            data['tags'] = self.MoviesScraper.get_tags_list(db[self.index][self.element]['tags'])
-            data['stars'] = self.MoviesScraper.get_stars_list(db[self.index][self.element]['stars'])
-            os.remove(db[self.index][self.element]['dir'] + '\config.JSON')
-            a_file = open(db[self.index][self.element]['dir'] + "\config.JSON", "x")
-            json.dump(data, a_file)
-            a_file.close()
+                self.start_scraping_main(data)
+                data['tags'] = self.MoviesScraper.get_tags_list(db[self.index][self.element]['tags'])
+                data['stars'] = self.MoviesScraper.get_stars_list(db[self.index][self.element]['stars'])
+                os.remove(db[self.index][self.element]['dir'] + '\config.JSON')
+                a_file = open(db[self.index][self.element]['dir'] + "\config.JSON", "x")
+                json.dump(data, a_file)
+                a_file.close()
+        except KeyError:
+            pass
 
     def start_scraping(self,data)->data:
         data['show_name']    = self.MoviesScraper.get_show_name()
