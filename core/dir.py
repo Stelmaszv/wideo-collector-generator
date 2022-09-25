@@ -87,6 +87,30 @@ class BasseScan:
     base_dir=[]
     wrong_string=["'"," "]
 
+    def set_assset(self,string,index):
+        count = 0
+        for astet in string:
+            if astet==index:
+                return count
+            count = count + 1
+        return 0
+
+    def set_dir_for_web(self, dir,index):
+
+        if dir is not None:
+            string = dir.split('\\')
+            assert_index=self.set_assset(string,index)
+            count=0
+            str=''
+            for dir_strin in string:
+                if count>=assert_index:
+                    str=str+string[count]
+                    if count!=len(string)-1:
+                        str=str+'\\'
+                count = count + 1
+            return str
+        return ''
+
     def base_init(self,name,dir):
         self.name = name
         print('Adding ... ' + self.name + '')
@@ -102,14 +126,6 @@ class BasseScan:
             f.close()
             return True
         return False
-
-    """
-    def convert(self,a):
-        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-        it = iter(a)
-        res_dct = dict(zip(it, it))
-        return res_dct
-    """
 
     def clear_name(self,name):
         str = ''
@@ -151,12 +167,10 @@ class AbstractAddElment(ABC,BasseScan):
     shema_url = 'json_schema/movies.JSON'
 
     def __init__(self,name,dir=''):
-        print(name,dir)
         self.base_init(name,dir)
         self.create_dir()
 
     def create_dir(self):
-        print(os.path.isdir(self.dir))
         if os.path.isdir(self.dir) is False:
             os.makedirs(self.dir)
         db['movies'][self.name]['dir'] = self.dir
@@ -181,10 +195,10 @@ class StarElment(AbstractAddElment):
         self.create_json_config()
         self.init_dir()
         try:
-            db['stars'][name] = {'name': name, 'config': str(False),'dir':self.dir}
+            db['stars'][name] = {'name': name, 'config': str(False),'dir':self.dir,'movies':{}}
             self.test_db=db
         except:
-            self.test_db['stars'][name] = {'name': name, 'config': str(False), 'dir': self.dir}
+            self.test_db['stars'][name] = {'name': name, 'config': str(False), 'dir': self.dir,'movies':{}}
 
     def create_dir(self):
         self.dir=self.set_dir(self.name,'stars')
@@ -252,19 +266,21 @@ class AbstractScanElement(ABC,BasseScan):
                 dir_list_el = os.listdir(self.dir + '\\' + self.scan_dir + '\\' + dir + '')
                 for el_in_dir in dir_list_el:
                     if el_in_dir.endswith(movie_ext):
-
-                        movie_dir = self.dir + '\\' + dir
+                        movie_dir=self.dir + '\\' + dir
                         new_movie_dir = movie_dir.replace("series", "movies")
+                        moviedir=self.set_dir_for_web(new_movie_dir, "movies")
                         db[self.index][self.name]['movies'][self.clear_name(el_in_dir)] = self.clear_name(el_in_dir)
                         db['movies'][self.clear_name(el_in_dir)] = {
                             'name': self.clear_name(el_in_dir),
                             'full_name': el_in_dir,
-                            'dir': new_movie_dir,
+                            'dir': moviedir,
                             'series': self.name,
-                            'src': self.dir + '\\' + self.scan_dir + '\\' + dir + '\\' + self.clear_name(el_in_dir),
+                            'src': self.set_dir_for_web(self.dir + '\\' + self.scan_dir + '\\' + dir,"movies"),
+                            'movie_dir': self.set_dir_for_web(moviedir, "movies"),
                             'config': str(False),
                             'season': dir,
                             'tags': {},
+                            'web_dir':self.set_dir_for_web(self.dir,self.index)
                         }
                         MovieElment(self.clear_name(el_in_dir), new_movie_dir).add()
                         self.action_after_index(db[self.index][self.name])
@@ -285,7 +301,7 @@ class AbstractScanElement(ABC,BasseScan):
             a_file.close()
 
     def add_to_db(self):
-        db[self.index][self.name] = {'name': self.name, 'dir': self.dir, 'config': str(False)}
+        db[self.index][self.name] = {'name': self.name, 'web_dir':self.set_dir_for_web(self.dir,self.index),'dir': self.dir, 'config': str(False)}
         self.db_el = db[self.index][self.name]
 
 class ScanSerie(AbstractScanElement):
@@ -308,6 +324,10 @@ class ScanStar(ScanSerie):
             stars_dist[star]={"star_name":star}
         stars_dist.update(stars)
         return stars_dist
+
+    def add_to_db(self):
+        db[self.index][self.name] = {'name': self.name, 'dir': self.dir, 'config': str(False)}
+        self.db_el = db[self.index][self.name]
 
 class ScanProducent(ScanSerie):
 

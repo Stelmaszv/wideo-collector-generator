@@ -17,7 +17,7 @@ hair_color=('Blond','Brown')
 default_scraper=True
 default_scraper_var='imdb'
 scraper=scrapers[default_scraper_var] #imdb
-download_galery=True
+download_galery=False
 defult_stars_scraper=defult_stars_scraper_var
 
 if settings_array['scraper']:

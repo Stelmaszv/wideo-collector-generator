@@ -16,10 +16,11 @@ class AbstractScraper:
     cover=False
     place=''
 
-    def __init__(self,url,index):
+    def __init__(self,url,index,url_parms=False):
 
         self.index=index
         self.url = url
+        self.url_parms=url_parms
         from core.settings import chrome
         self.chrome=chrome
         if validators.url(self.url):

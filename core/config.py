@@ -41,7 +41,7 @@ class AbstractDirConfig(ABC):
 
 class AbstractConfig(ABC):
 
-    forbiten_fields=['name','dir','config','src','full_name','season']
+    forbiten_fields=['name','dir','config','full_name','season']
     fields = []
     photo_dir = 'photos'
     if_count_stars=False
@@ -117,7 +117,8 @@ class AbstractConfig(ABC):
                 if el not in self.forbiten_fields and el in self.fields:
                     db[self.index][self.element][el]=data[el]
                 else:
-                    print('Warning ! Field '+el+' is invalid for '+self.index)
+                    pass
+                    #print('Warning ! Field '+el+' is invalid for '+self.index)
 
         os.remove("dist.json")
         a_file = open("dist.json", "w")
@@ -134,6 +135,20 @@ class ConfigStar(AbstractConfig):
                   'height','ethnicity','hair_color','birth_place','nationality',
                   'date_of_birth','scraper','url']
     if_count_stars = False
+
+    def add_movies(self,movies):
+        dist={}
+        for movie in movies:
+            dist[movie]=movie
+        return dist
+
+    def find_all_stars_movies(self):
+        movies=[]
+        for movie in db['movies']:
+            for star in  db['movies'][movie]['stars']:
+                if star == self.element:
+                    movies.append(movie)
+        return self.add_movies(movies)
 
     def on_config(self,data,index)->data:
         data['avatar'] = self.get_img('avatar',data['avatar'])
@@ -155,6 +170,8 @@ class ConfigStar(AbstractConfig):
 
         if self.valid_data(data['date_of_birth'],True):
             pass
+
+        db['stars'][self.element]["movies"]=self.find_all_stars_movies()
         return data
 
 class ConfigSeries(AbstractConfig):

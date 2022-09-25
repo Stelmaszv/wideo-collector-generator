@@ -72,6 +72,7 @@ class MoviesScraperFactory(AbstractScraperFactory):
                 if self.Scraper:
                     self.MoviesScraper = self.Scraper.MoviesScraper
                     type = self.MoviesScraper.type
+
                     if type == 'list':
                         series_name = db[self.index][self.element]['series']
                         series_index = db['series'][series_name]
@@ -79,6 +80,15 @@ class MoviesScraperFactory(AbstractScraperFactory):
                         if series_scraper.list_error:
                             url = series_scraper.faind(db[self.index][self.element]['name'])
                             self.MoviesScraper = self.MoviesScraper(url, db[self.index][self.element])
+                    if type == 'web_search':
+                        with open(db['series'][db[self.index][self.element]['series']]['dir'] + '/config.JSON') as f:
+                            series = json.load(f)
+                        self.MoviesScraper=self.Scraper.MoviesWebScraper(
+                            series['scraper_url'],
+                            series['scraper_pages'],
+                            db[self.index][self.element]
+
+                        ).find_video()
 
             if self.Scraper:
                 self.start_scraping_main(data)
