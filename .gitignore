@@ -1,4 +1,7 @@
 .idea
 data.JSON
+dist.JSON
+/__pycache__/
 /chromedriver.exe
 /scrabers/
+!/.gitignore

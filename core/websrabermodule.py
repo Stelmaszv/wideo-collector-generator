@@ -59,14 +59,15 @@ class MoviesScraperFactory(AbstractScraperFactory):
 
             self.Scraper = None
 
-            if "scraper" in data:
-                self.Scraper = scrapers[data['scraper']]()
+            if "Scraper" in data:
+                self.Scraper = scrapers[data['Scraper']]()
             else:
-                if "scraper" in  series_index:
-                    self.Scraper = scrapers[series_index["scraper"]]()
+                if "Scraper" in series_index:
+                    self.Scraper = scrapers[series_index["Scraper"]]()
                 else:
-                    if default_scraper is True:
-                        self.Scraper = scraper()
+                    if "Scraping_on" in series_index:
+                        if default_scraper is True:
+                            self.Scraper = scraper()
 
             if self.Scraper:
                 self.MoviesScraper = self.Scraper.MoviesScraper
@@ -78,6 +79,15 @@ class MoviesScraperFactory(AbstractScraperFactory):
                     if series_scraper.list_error:
                         url = series_scraper.faind(db[self.index][self.element]['name'])
                         self.MoviesScraper = self.MoviesScraper(url, db[self.index][self.element])
+                if type == 'web_search':
+                    with open(db['series'][db[self.index][self.element]['series']]['dir'] + '/config.JSON') as f:
+                        series = json.load(f)
+                    self.MoviesScraper = self.Scraper.MoviesWebScraper(
+                        series['scraper_url'],
+                        series['scraper_pages'],
+                        db[self.index][self.element]
+
+                    ).find_video()
 
         if self.Scraper:
             self.start_scraping_main(data)
@@ -138,16 +148,16 @@ class StarsScraperFactory(AbstractScraperFactory):
         pass
 
     def start_scraping(self,data)->data:
-        data['show_name']    = self.StarsScraper.get_show_name()
-        data['description']  = self.StarsScraper.get_description()
-        data['birth_place']  = self.StarsScraper.get_birth_place()
-        data['nationality']  = self.StarsScraper.get_nationality()
-        data['weight']       = self.StarsScraper.get_weight()
-        data['height']       = self.StarsScraper.get_height()
-        data['ethnicity'] = self.StarsScraper.get_ethnicity()
-        data['hair_color'] = self.StarsScraper.get_hair_color()
-        data['date_of_birth'] = self.StarsScraper.get_date_of_birth(db[self.index][self.element])
-        data['avatar'] = self.StarsScraper.get_avatar()
+        #data['show_name']    = self.StarsScraper.get_show_name()
+        #data['description']  = self.StarsScraper.get_description()
+        #data['birth_place']  = self.StarsScraper.get_birth_place()
+        #data['nationality']  = self.StarsScraper.get_nationality()
+        #data['weight']       = self.StarsScraper.get_weight()
+        #data['height']       = self.StarsScraper.get_height()
+        #data['ethnicity'] = self.StarsScraper.get_ethnicity()
+        #data['hair_color'] = self.StarsScraper.get_hair_color()
+        #data['date_of_birth'] = self.StarsScraper.get_date_of_birth(db[self.index][self.element])
+        #data['avatar'] = self.StarsScraper.get_avatar()
         return data
 
 class AbstractDirScraper(ABC):
@@ -159,7 +169,6 @@ class AbstractDirScraper(ABC):
         self.index=index
 
     def start_scraper(self):
-        print(self.scraper_mess)
         for el in db[self.index]:
             self.FactoryScraper().scraper(self.index,el)
 

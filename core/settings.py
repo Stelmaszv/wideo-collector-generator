@@ -1,7 +1,7 @@
 from scrapers import scrapers,defult_stars_scraper as defult_stars_scraper_var
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
-error_type = False  #True for full mess
+error_type = True  #True for full mess
 settings_array = {
     "scan_dir": True,
     "scraper" : True,
@@ -20,3 +20,4 @@ defult_stars_scraper=defult_stars_scraper_var
 
 if settings_array['scraper']:
     chrome = webdriver.Chrome(ChromeDriverManager().install())
+    chrome.minimize_window()

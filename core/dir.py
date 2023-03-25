@@ -4,9 +4,6 @@ import ast
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
-
-import setuptools.command.easy_install
-
 from core.settings import movie_ext
 
 with open('dist.json') as f:
@@ -252,11 +249,10 @@ class AbstractScanElement(ABC,BasseScan):
         for el in list:
             elements[el]=''
 
-        location=db[self.index][self.name]['dir']+'/scraber_list.json';
-        if os.path.exists(location) is False:
-            a_file = open(location, "w")
-            json.dump(elements, a_file)
-            a_file.close()
+        location=db[self.index][self.name]['dir']+'\scraber_list.json';
+        a_file = open(location, "w")
+        json.dump(elements, a_file)
+        a_file.close()
 
     def add_to_db(self):
         db[self.index][self.name] = {'name': self.name, 'dir': self.dir, 'config': str(False)}
