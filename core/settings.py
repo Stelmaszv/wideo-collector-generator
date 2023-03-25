@@ -1,6 +1,4 @@
-import time
-
-from scrabers.scrapers import scrapers,defult_stars_scraper as defult_stars_scraper_var
+from scrapers import scrapers,defult_stars_scraper as defult_stars_scraper_var
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
 error_type = False  #True for full mess
