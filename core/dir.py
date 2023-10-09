@@ -4,9 +4,6 @@ import ast
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
-
-import setuptools.command.easy_install
-
 from core.settings import movie_ext
 
 with open('dist.json') as f:
@@ -161,7 +158,12 @@ class StarElment(AbstractAddElment):
         self.create_dir()
         self.create_json_config()
         self.init_dir()
-        db['stars'][name] = {'name': name, 'config': str(False),'dir':self.dir}
+        db['stars'][name] = {'name': name, 'config': str(False),'dir':self.dir,'web_dir':self.web_dir(self.dir,'stars')}
+
+    def web_dir(self,dir,index):
+        if len(dir.split(index))==2:
+            return 'http:\\\\\\\\127.0.0.1:8000\web\\'+index+''+dir.split(index)[1]
+        return ''
 
     def create_dir(self):
         self.dir=self.set_dir(self.name,'stars')
@@ -179,7 +181,7 @@ class MovieElment(AbstractAddElment):
         stars_dist={}
         if stars is not None:
             for star in stars:
-                stars_dist[star]={"star_name":star}
+                stars_dist[star]=star
         return stars_dist
 
     def add(self):
@@ -218,6 +220,11 @@ class AbstractScanElement(ABC,BasseScan):
         dir=self.dir.split('\\')
         return  dir[len(dir)-1]
 
+    def web_dir(self,dir,index):
+        if len(dir.split(index))==2:
+            return 'http:\\\\\\\\127.0.0.1:8000\web\\'+index+''+dir.split(index)[1]
+        return ''
+
     def scan(self):
         dir_list = os.listdir(self.dir + '\\' + self.scan_dir);
         db[self.index][self.name]['movies'] = {}
@@ -233,12 +240,16 @@ class AbstractScanElement(ABC,BasseScan):
                         db['movies'][self.clear_name(el_in_dir)] = {
                             'name': self.clear_name(el_in_dir),
                             'full_name': el_in_dir,
-                            'dir': new_movie_dir,
                             'series': self.name,
+                            'producent':"",
+                            'dir': new_movie_dir,
+                            'web_dir': self.web_dir(new_movie_dir+'\\'+self.clear_name(el_in_dir),'movies'),
                             'src': self.dir + '\\' + self.scan_dir + '\\' + dir + '\\' + el_in_dir,
+                            'web_src':self.web_dir(self.dir + '\\' + self.scan_dir + '\\' + dir + '\\' + el_in_dir,'series'),
                             'config': str(False),
                             'season': dir,
                             'tags': {},
+                            'banner':""
                         }
                         MovieElment(self.clear_name(el_in_dir), new_movie_dir).add()
                         self.action_after_index(db[self.index][self.name])
@@ -252,14 +263,14 @@ class AbstractScanElement(ABC,BasseScan):
         for el in list:
             elements[el]=''
 
-        location=db[self.index][self.name]['dir']+'/scraber_list.json';
-        if os.path.exists(location) is False:
+        location=db[self.index][self.name]['dir']+'\scraber_list.json';
+        if Path(location).is_file() is False:
             a_file = open(location, "w")
             json.dump(elements, a_file)
             a_file.close()
 
     def add_to_db(self):
-        db[self.index][self.name] = {'name': self.name, 'dir': self.dir, 'config': str(False)}
+        db[self.index][self.name] = {'name': self.name,'show_name': '', 'dir': self.dir,'web_dir': self.web_dir(self.dir,self.index), 'config': str(False)}
         self.db_el = db[self.index][self.name]
 
 class ScanSerie(AbstractScanElement):

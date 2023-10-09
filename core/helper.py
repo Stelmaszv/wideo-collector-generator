@@ -6,6 +6,7 @@ class DataValid:
         self.to_today = to_today
         self.elment=element['name']
         self.index=index
+
         if (len(self.data.split('-')) != 3):
             print('Invalid data format for ' + self.index + ' ' + self.elment + ' is Invalid valid format is YEAR-MOUNT-DAY')
 
