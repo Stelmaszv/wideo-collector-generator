@@ -1,10 +1,11 @@
 from scrapers import scrapers,defult_stars_scraper as defult_stars_scraper_var
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
+
 error_type = True  #True for full mess
 settings_array = {
     "scan_dir": True,
-    "scraper" : True,
+    "scraper" : False,
     "config"  : True
 }
 movie_ext= ('.avi','.mkv','.mp4','.wmv')

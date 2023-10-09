@@ -1,13 +1,10 @@
 import json
 import os
 from abc import ABC,abstractmethod
-
 import requests
 import selenium
 import validators
 from core.helper import DataValid
-
-
 
 class AbstractScraper:
 
@@ -114,7 +111,8 @@ class AbstractScraperMovies(AbstractScraper):
         for star in nstars:
             stars_dist[star]={"star_name":star}
             StarElment(star).add()
-        stars_dist.update(stars)
+        #stars_dist.update(stars)
+
         return stars_dist
 
     def add_tags(self,add_tag,tags):
@@ -128,8 +126,9 @@ class AbstractScraperMovies(AbstractScraper):
         tag_dist = {}
         for tag in tags_valid:
             tag_dist[tag] = {"tag_name": tag}
-        tags.update(tag_dist)
-        return {}
+        #tags.update(tag_dist)
+
+        return tag_dist
 
     def get_stars_dict(self,stars):
         return self.add_stars(self.set_stars(), stars)
@@ -144,7 +143,7 @@ class AbstractScraperMovies(AbstractScraper):
 
     def get_stars_list(self,stars):
         stars_array = self.from_dist_to_list(stars)
-        stars_array.extend(self.set_stars())
+        #stars_array.extend(self.set_stars())
         return stars_array
 
     def get_cover(self,cover):

@@ -54,10 +54,27 @@ class AbstractConfig(ABC):
         photo_list=db[self.index][self.element]['dir']+'\\'+self.photo_dir
         for photo in os.listdir(photo_list):
             if name==Path(photo).stem:
-                return db[self.index][self.element]['dir']+'\\'+self.photo_dir+'\\'+photo
+                if 'ConfigMovies' ==  self.__class__.__name__:
+                    return 'http:\\\\\\\\127.0.0.1:8000\web\\' + self.index + '\\' + db[self.index][self.element]['dir'].split(self.index)[1]+'\\'+photo
+                else:
+                    return 'http:\\\\\\\\127.0.0.1:8000\web\\' + self.index + '\\' + db[self.index][self.element]['dir'].split(self.index)[1] + '\\photos\\' + photo
+
         return defult
 
-    def on_config(self,data,index)->data:
+    def set_banner(self,index):
+        list = os.listdir(db[index][self.element]['dir']+'\photos')
+        dir = db[index][self.element]['dir']+'\photos'
+        for el in list:
+            if Path(el).stem =='banner':
+                return 'http:\\\\\\\\127.0.0.1:8000\web\\'+str(index)+'\\'+dir.split(index)[1]+'\\'+el
+        return ''
+
+    def web_dir(self,dir,index):
+        if dir  != '' and dir != 'web':
+            return 'http:\\\\\\\\127.0.0.1:8000\web\\'+index+''+dir.split(index)[1]
+        return ''
+
+    def on_config(self,data,index):
         return data
 
     def count_stars(self):
@@ -83,12 +100,8 @@ class AbstractConfig(ABC):
                 valid_tags_return.append(tag)
             return valid_tags_return
 
-        tags_valid=valid_tags(tags)
-        tag_dist = {}
-        for tag in tags_valid:
-            tag_dist[tag] = {"tag_name": tag}
-        db['tags'].update(tag_dist)
-        return {'tags':tag_dist}
+        valid_tags(tags)
+        return tags
 
     def valid_number(self,number,limit):
         return (number > limit)
@@ -161,17 +174,15 @@ class ConfigStar(AbstractConfig):
 class ConfigSeries(AbstractConfig):
 
     fields = ['show_name','producent','tags','avatar','number_of_sezons',
-              'description','country','years','scraper']
+              'description','country','years','scraper','scraper_url','Scraper']
     if_count_stars = True
 
     def add_producent(self,producent):
         from run import data_json_dirs
-        producent_dist={}
-        producent_dist['producent']={"series_name":producent}
         start = data_json_dirs['producents']
         set_location= set_dir(producent,start)
         ScanSerie(set_location)
-        return producent_dist
+        return producent
 
     def number_of_sezons(self):
         location=db[self.index][self.element]['dir']+'\\movies'
@@ -179,6 +190,8 @@ class ConfigSeries(AbstractConfig):
 
     def on_config(self, data, index):
         self.count_stars()
+        db['series'][self.element]['banner'] = self.web_dir(self.set_banner('series'), 'series')
+        data['banner'] = self.web_dir(self.set_banner('series'), 'series')
         data['number_of_sezons'] = self.number_of_sezons()
         data['avatar']=self.get_img('avatar',data['avatar'])
 
@@ -192,21 +205,24 @@ class ConfigSeries(AbstractConfig):
 
 class ConfigProducents(AbstractConfig):
 
-    fields = ['show_name','series','tags','description','country','avatar','scraper']
+    fields = ['show_name','series','tags','description','country','avatar','scraper','banner']
     if_count_stars = True
 
     def add_series(self,series):
         from run import data_json_dirs
-        series_dist={}
         for serie in series:
-            series_dist[serie]={"series_name":serie}
             start = data_json_dirs['series']
             set_location= set_dir(serie,start)
             ScanSerie(set_location)
-        return series_dist
+        return series
 
     def on_config(self, data, index):
-        data['avatar'] = self.get_img('avatar', data['avatar'])
+        data['banner'] = self.web_dir(self.set_banner('producents'),'producents')
+        db['producents'][self.element]['banner'] = self.web_dir(self.set_banner('producents'), 'producents')
+
+        if "avatar" in data:
+            data['avatar'] = self.get_img('avatar', data['avatar'])
+
         if "series" in data:
             data['series']  = self.add_series(data['series'])
 
@@ -218,7 +234,7 @@ class ConfigProducents(AbstractConfig):
 class ConfigMovies(AbstractConfig):
 
     fields = ['show_name','poster','cover','stars','tags','description',
-              'country','date_relesed','scraper']
+              'country','date_relesed','scraper','source','back_cover','front_cover']
     photo_dir = ''
 
     def add_stars(self,nstars,stars):
@@ -229,30 +245,40 @@ class ConfigMovies(AbstractConfig):
         stars_dist.update(stars)
         return stars_dist
 
-    def find_cover(self,cover):
-        dir=os.listdir(db['series'][db[self.index][self.element]['series']]['dir']+'\\covers')
-        for photo in dir:
-            if cover==Path(photo).stem:
-                return db['series'][db[self.index][self.element]['series']]['dir']+'\\covers\\'+photo
+    def web_dir(self,dir,index):
+        if dir  != '' and dir != 'web':
+            return 'http:\\\\\\\\127.0.0.1:8000\web\\'+index+''+dir.split(index)[1]
+        return ''
+
+    def find_cover(self,seazon,typ,covers_dir):
+        dir = os.listdir(db['series'][db[self.index][self.element]['series']]['dir'] + '\\covers')
+        file_name = seazon+'_'+typ+'.jpg'
+
+        if file_name in dir:
+            return covers_dir+file_name
+        return ''
 
     def on_config(self, data, index):
-        data['cover']=self.get_img('cover',data['cover'])
-        data['poster']=self.get_img('poster',data['poster'])
-        cover_srt=data['cover'].split(':')
-        if len(cover_srt)>0 and cover_srt[0]=="get":
-            data['cover']=self.find_cover(cover_srt[1])
 
-        if len(cover_srt) > 0 and cover_srt[0] == "getseason":
-            data['cover'] = self.find_cover('season_' + index['season'])
+        if "cover" in data:
+            data['cover'] = self.get_img('cover',data['cover'])
+        if "poster" in data:
+            data['poster'] = self.web_dir(self.get_img('poster',data['poster']),'movies')
 
-        if "stars" in data:
-            data['stars']  = self.add_stars(data['stars'],index['stars'])
+        cover_srt = data['cover'].split(':')
+
+        if cover_srt[0] == "getsezon":
+            front_cover = self.find_cover(db['movies'][self.element]['season'],'front',db['series'][db['movies'][self.element]['series']]['dir'] + '\\covers\\')
+            back_cover = self.find_cover(db['movies'][self.element]['season'],'back',db['series'][db['movies'][self.element]['series']]['dir'] + '\\covers\\')
+            db['movies'][self.element]['back_cover'] = self.web_dir(back_cover,'series')
+            db['movies'][self.element]['front_cover'] = self.web_dir(front_cover,'series')
+
+        if "producent" in db['series'][db['movies'][self.element]['series']]:
+            db['movies'][self.element]['producent'] = db['series'][db['movies'][self.element]['series']]['producent']
 
         if "tags" in data:
-            data['tags']  = self.add_tags(data['tags'])
+            db['tags'] = self.add_tags(data['tags'])
 
-        if self.valid_data(data['date_relesed']):
-            pass
         return data
 
 class ConfigStarDir(AbstractDirConfig):

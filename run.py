@@ -5,6 +5,7 @@ from core.settings import settings_array
 from pathlib import Path
 CreateDist()
 data_json_dirs={}
+
 print("Validate data.JSON file ... Start")
 
 if Path('data.json').is_file():
